@@ -1,0 +1,16 @@
+﻿services:
+  postgres:
+    image: postgres:17
+    container_name: aiBikeDB
+    restart: always
+    environment:
+      POSTGRES_DB: project
+      POSTGRES_USER: project
+      POSTGRES_PASSWORD: project
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

@@ -49,3 +49,23 @@ To run the backend, navigate server directory and execute:
 ```bash
 dotnet run
 ```
+
+### Frontend
+
+Navigate to the directory:
+
+```bash
+cd clientApp
+```
+
+If running for the first time, install dependencies:
+
+```bash
+npm install
+```
+
+To run the frontend:
+
+```bash
+npm start
+```

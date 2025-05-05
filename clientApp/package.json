@@ -7,7 +7,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "format": "npx eslint . --fix"
   },
   "dependencies": {
     "expo": "~53.0.7",
@@ -19,7 +20,12 @@
     "@expo/metro-runtime": "~5.0.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+		"@babel/core": "^7.20.0",
+		"eslint-config-expo": "~9.2.0",
+		"eslint-config-prettier": "^10.1.2",
+		"eslint-plugin-prettier": "^5.4.0",
+		"jscodeshift": "^0.15.2",
+		"prettier": "^3.5.3"
   },
   "private": true
 }

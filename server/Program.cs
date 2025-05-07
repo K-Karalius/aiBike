@@ -4,6 +4,8 @@ using server.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddJsonFile("connectionStrings.json", optional: true, reloadOnChange: true);
+
 builder.Services
     .AddDataSeeders()
     .AddDbContextWithIdentity(builder.Configuration)

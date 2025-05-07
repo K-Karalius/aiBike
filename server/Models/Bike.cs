@@ -8,7 +8,7 @@ public class Bike
     public int Id { get; set;}
     public string SerialNumber { get; set;}
     public BikeStatus BikeStatus { get; set;}
-    public int CurrentStationId { get; set;}
+    public int? CurrentStationId { get; set;}
 
     public Station? CurrentStation { get; set;}
 }

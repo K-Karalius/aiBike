@@ -61,7 +61,7 @@ cd clientApp
 If running for the first time, install dependencies:
 
 ```bash
-npm install
+npx expo install
 ```
 
 To run the frontend:

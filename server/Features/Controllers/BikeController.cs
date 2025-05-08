@@ -36,7 +36,7 @@ public class BikeController : Controller
     {
         var ret = _bikeService.CreateBike(bike);
         if (ret == null) return UnprocessableEntity("");
-        return Ok();
+        return Ok(ret);
     }
 
     [HttpPatch]

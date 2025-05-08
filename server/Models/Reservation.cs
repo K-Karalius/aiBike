@@ -14,7 +14,7 @@ public class Reservation
     public DateTime ExpiresAtUTC { get; set;}
     public ReservationStatus ReservationStatus { get; set;}
 
-    public IdentityUser User { get; set;}
-    public Bike Bike { get; set;}
-    public Station Station { get; set;}
+    public IdentityUser? User { get; set;}
+    public Bike? Bike { get; set;}
+    public Station? Station { get; set;}
 }

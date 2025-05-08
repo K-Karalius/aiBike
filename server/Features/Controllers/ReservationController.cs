@@ -36,7 +36,7 @@ public class ReservationController : Controller
     {
         var ret = _reservationService.CreateReservation(Reservation);
         if (ret == null) return UnprocessableEntity("");
-        return Ok();
+        return Ok(ret);
     }
 
     [HttpPatch]

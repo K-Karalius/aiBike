@@ -36,7 +36,7 @@ public class StationController : Controller
     {
         var ret = _stationService.CreateStation(Station);
         if (ret == null) return UnprocessableEntity("");
-        return Ok();
+        return Ok(ret);
     }
 
     [HttpPatch]

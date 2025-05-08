@@ -36,7 +36,7 @@ public class RideController : Controller
     {
         var ret = _rideService.CreateRide(Ride);
         if (ret == null) return UnprocessableEntity("");
-        return Ok();
+        return Ok(ret);
     }
 
     [HttpPatch]

@@ -17,8 +17,8 @@ public class Ride
     public decimal FareAmount { get; set;}
     public RideStatus RideStatus { get; set;}
 
-    public IdentityUser User { get; set;}
-    public Bike Bike { get; set;}
+    public IdentityUser? User { get; set;}
+    public Bike? Bike { get; set;}
     public Station? StartStation { get; set;}
     public Station? EndStation { get; set;}
 }

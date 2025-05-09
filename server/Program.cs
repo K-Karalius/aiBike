@@ -1,8 +1,23 @@
 using Microsoft.OpenApi.Models;
+using Serilog;
+using server.Configuration;
 using server.Extensions;
 using server.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+builder.Host.UseSerilog((hostCtx, loggerConfig) => loggerConfig
+    .ReadFrom.Configuration(hostCtx.Configuration)
+    .Enrich.FromLogContext()
+);
+
+builder.Services.Configure<LoggingInterceptorOptions>(
+    builder.Configuration.GetSection("LoggingInterceptor"));
+builder.Services.AddHttpContextAccessor();
 
 builder.Services
     .AddDataSeeders()
@@ -23,8 +38,10 @@ builder.Services
 
 var app = builder.Build();
 
-await app.SeedDataAsync();
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<LoggingMiddleware>();
+
+await app.SeedDataAsync();
 
 app.RegisterEndpoints();    
 

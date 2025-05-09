@@ -5,11 +5,10 @@ namespace server.Models;
 
 public class Reservation
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set;}
+    public Guid Id { get; set;} = Guid.NewGuid();
     public string UserId { get; set;}
-    public int BikeId { get; set;}
-    public int StationId { get; set;}
+    public Guid? BikeId { get; set;}
+    public Guid? StationId { get; set;}
     public DateTime ReservedAtUTC { get; set;}
     public DateTime ExpiresAtUTC { get; set;}
     public ReservationStatus ReservationStatus { get; set;}

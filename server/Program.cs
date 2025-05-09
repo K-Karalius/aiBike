@@ -1,14 +1,11 @@
 using Microsoft.OpenApi.Models;
 using server.Extensions;
-using server.Features.Repositories;
-using server.Features.Services;
 using server.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("connectionStrings.json", optional: true, reloadOnChange: true);
 
-builder.Services.AddControllers();
 builder.Services
     .AddDataSeeders()
     .AddDbContextWithIdentity(builder.Configuration)
@@ -18,14 +15,6 @@ builder.Services
     .AddCommandHandlers()
     .AddEndpointsRegistration()
     .AddEndpointsApiExplorer()
-    .AddScoped<BikeRepository>()
-    .AddScoped<BikeService>()
-    .AddScoped<StationRepository>()
-    .AddScoped<StationService>()
-    .AddScoped<ReservationRepository>()
-    .AddScoped<ReservationService>()
-    .AddScoped<RideRepository>()
-    .AddScoped<RideService>()
     .AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo {
@@ -54,7 +43,5 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();

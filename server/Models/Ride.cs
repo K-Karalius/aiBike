@@ -5,12 +5,11 @@ namespace server.Models;
 
 public class Ride
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set;}
+    public Guid Id { get; set;} = Guid.NewGuid();
     public string UserId { get; set;}
-    public int BikeId { get; set;}
-    public int StartStationId { get; set;}
-    public int EndStationId { get; set;}
+    public Guid? BikeId { get; set;}
+    public Guid? StartStationId { get; set;}
+    public Guid? EndStationId { get; set;}
     public DateTime? StartedAtUTC { get; set;}
     public DateTime? FinishedAtUTC { get; set;}
     public decimal DistanceMeters { get; set;}

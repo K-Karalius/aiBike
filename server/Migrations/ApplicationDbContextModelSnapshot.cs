@@ -220,17 +220,15 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.Bike", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("BikeStatus")
                         .HasColumnType("integer");
 
-                    b.Property<int>("CurrentStationId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("CurrentStationId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("SerialNumber")
                         .IsRequired()
@@ -245,14 +243,12 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.Reservation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BikeId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("BikeId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("ExpiresAtUTC")
                         .HasColumnType("timestamp with time zone");
@@ -263,8 +259,8 @@ namespace server.Migrations
                     b.Property<DateTime>("ReservedAtUTC")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("StationId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("StationId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -283,20 +279,18 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.Ride", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BikeId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("BikeId")
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("DistanceMeters")
                         .HasColumnType("numeric");
 
-                    b.Property<int>("EndStationId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("EndStationId")
+                        .HasColumnType("uuid");
 
                     b.Property<decimal>("FareAmount")
                         .HasColumnType("numeric");
@@ -307,8 +301,8 @@ namespace server.Migrations
                     b.Property<int>("RideStatus")
                         .HasColumnType("integer");
 
-                    b.Property<int>("StartStationId")
-                        .HasColumnType("integer");
+                    b.Property<Guid?>("StartStationId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime?>("StartedAtUTC")
                         .HasColumnType("timestamp with time zone");
@@ -332,11 +326,9 @@ namespace server.Migrations
 
             modelBuilder.Entity("server.Models.Station", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Capacity")
                         .HasColumnType("integer");
@@ -411,9 +403,7 @@ namespace server.Migrations
                 {
                     b.HasOne("server.Models.Station", "CurrentStation")
                         .WithMany("Bikes")
-                        .HasForeignKey("CurrentStationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CurrentStationId");
 
                     b.Navigation("CurrentStation");
                 });
@@ -422,15 +412,11 @@ namespace server.Migrations
                 {
                     b.HasOne("server.Models.Bike", "Bike")
                         .WithMany()
-                        .HasForeignKey("BikeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BikeId");
 
                     b.HasOne("server.Models.Station", "Station")
                         .WithMany()
-                        .HasForeignKey("StationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StationId");
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
@@ -449,21 +435,15 @@ namespace server.Migrations
                 {
                     b.HasOne("server.Models.Bike", "Bike")
                         .WithMany()
-                        .HasForeignKey("BikeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("BikeId");
 
                     b.HasOne("server.Models.Station", "EndStation")
                         .WithMany()
-                        .HasForeignKey("EndStationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EndStationId");
 
                     b.HasOne("server.Models.Station", "StartStation")
                         .WithMany()
-                        .HasForeignKey("StartStationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StartStationId");
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()

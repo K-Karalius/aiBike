@@ -1,16 +1,16 @@
 using server.Common.Abstractions;
 using server.DatabaseContext;
 
-namespace server.Features.Bikes.Delete;
+namespace server.Features.Reservations.Delete;
 
-public class DeleteBikeEndpoint : IEndpoint
+public class DeleteReservationEndpoint : IEndpoint
 {
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder) =>
-        builder.MapDelete("/api/bike/{id}",
+        builder.MapDelete("/api/reservation/{id}",
             async (ApplicationDbContext dbContext, Guid id) =>
             {
-                var result = dbContext.Bike.FirstOrDefault(b => b.Id == id);
-                if (result == null) return Results.NotFound("Bike not found");
+                var result = dbContext.Reservation.FirstOrDefault(r => r.Id == id);
+                if (result == null) return Results.NotFound("Reservation not found");
                 dbContext.Remove(result);
                 await dbContext.SaveChangesAsync();
                 return Results.Ok();

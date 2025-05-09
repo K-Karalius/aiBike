@@ -17,9 +17,6 @@ public class CreateBikeEndpoint : IEndpoint
                 };
                 await dbContext.AddAsync(bike);
                 await dbContext.SaveChangesAsync();
-                var result = dbContext.Bike.Find(bike.Id);
-                return result != null
-                    ? Results.Ok(result)
-                    : Results.UnprocessableEntity("An error occured");
+                return Results.Ok(bike);
             });
 }

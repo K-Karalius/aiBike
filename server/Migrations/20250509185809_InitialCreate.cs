@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace server.Migrations
 {
     /// <inheritdoc />
-    public partial class IdentityUser : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -49,6 +49,21 @@ namespace server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Station",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Latitude = table.Column<decimal>(type: "numeric", nullable: false),
+                    Longitude = table.Column<decimal>(type: "numeric", nullable: false),
+                    Capacity = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Station", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -157,6 +172,99 @@ namespace server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Bike",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    SerialNumber = table.Column<string>(type: "text", nullable: false),
+                    BikeStatus = table.Column<int>(type: "integer", nullable: false),
+                    CurrentStationId = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bike", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Bike_Station_CurrentStationId",
+                        column: x => x.CurrentStationId,
+                        principalTable: "Station",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reservation",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    BikeId = table.Column<Guid>(type: "uuid", nullable: true),
+                    StationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ReservedAtUTC = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ExpiresAtUTC = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ReservationStatus = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reservation", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Reservation_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Reservation_Bike_BikeId",
+                        column: x => x.BikeId,
+                        principalTable: "Bike",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Reservation_Station_StationId",
+                        column: x => x.StationId,
+                        principalTable: "Station",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Ride",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    BikeId = table.Column<Guid>(type: "uuid", nullable: true),
+                    StartStationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    EndStationId = table.Column<Guid>(type: "uuid", nullable: true),
+                    StartedAtUTC = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    FinishedAtUTC = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DistanceMeters = table.Column<decimal>(type: "numeric", nullable: false),
+                    FareAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    RideStatus = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ride", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Ride_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Ride_Bike_BikeId",
+                        column: x => x.BikeId,
+                        principalTable: "Bike",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Ride_Station_EndStationId",
+                        column: x => x.EndStationId,
+                        principalTable: "Station",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Ride_Station_StartStationId",
+                        column: x => x.StartStationId,
+                        principalTable: "Station",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -193,6 +301,46 @@ namespace server.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bike_CurrentStationId",
+                table: "Bike",
+                column: "CurrentStationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservation_BikeId",
+                table: "Reservation",
+                column: "BikeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservation_StationId",
+                table: "Reservation",
+                column: "StationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reservation_UserId",
+                table: "Reservation",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ride_BikeId",
+                table: "Ride",
+                column: "BikeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ride_EndStationId",
+                table: "Ride",
+                column: "EndStationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ride_StartStationId",
+                table: "Ride",
+                column: "StartStationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Ride_UserId",
+                table: "Ride",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -214,10 +362,22 @@ namespace server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Reservation");
+
+            migrationBuilder.DropTable(
+                name: "Ride");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Bike");
+
+            migrationBuilder.DropTable(
+                name: "Station");
         }
     }
 }

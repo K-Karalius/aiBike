@@ -218,6 +218,136 @@ namespace server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("server.Models.Bike", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("BikeStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("CurrentStationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SerialNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrentStationId");
+
+                    b.ToTable("Bike");
+                });
+
+            modelBuilder.Entity("server.Models.Reservation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("BikeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpiresAtUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ReservationStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ReservedAtUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("StationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BikeId");
+
+                    b.HasIndex("StationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reservation");
+                });
+
+            modelBuilder.Entity("server.Models.Ride", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("BikeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("DistanceMeters")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid?>("EndStationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("FareAmount")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime?>("FinishedAtUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("RideStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("StartStationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("StartedAtUTC")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BikeId");
+
+                    b.HasIndex("EndStationId");
+
+                    b.HasIndex("StartStationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Ride");
+                });
+
+            modelBuilder.Entity("server.Models.Station", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Longitude")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Station");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -267,6 +397,72 @@ namespace server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("server.Models.Bike", b =>
+                {
+                    b.HasOne("server.Models.Station", "CurrentStation")
+                        .WithMany("Bikes")
+                        .HasForeignKey("CurrentStationId");
+
+                    b.Navigation("CurrentStation");
+                });
+
+            modelBuilder.Entity("server.Models.Reservation", b =>
+                {
+                    b.HasOne("server.Models.Bike", "Bike")
+                        .WithMany()
+                        .HasForeignKey("BikeId");
+
+                    b.HasOne("server.Models.Station", "Station")
+                        .WithMany()
+                        .HasForeignKey("StationId");
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bike");
+
+                    b.Navigation("Station");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("server.Models.Ride", b =>
+                {
+                    b.HasOne("server.Models.Bike", "Bike")
+                        .WithMany()
+                        .HasForeignKey("BikeId");
+
+                    b.HasOne("server.Models.Station", "EndStation")
+                        .WithMany()
+                        .HasForeignKey("EndStationId");
+
+                    b.HasOne("server.Models.Station", "StartStation")
+                        .WithMany()
+                        .HasForeignKey("StartStationId");
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bike");
+
+                    b.Navigation("EndStation");
+
+                    b.Navigation("StartStation");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("server.Models.Station", b =>
+                {
+                    b.Navigation("Bikes");
                 });
 #pragma warning restore 612, 618
         }

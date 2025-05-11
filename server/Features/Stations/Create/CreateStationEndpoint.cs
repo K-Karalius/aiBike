@@ -10,7 +10,8 @@ public class CreateStationEndpoint : IEndpoint
         builder.MapPost("/api/station/",
             async (ApplicationDbContext dbContext, CreateStationRequest request) =>
             {
-                var station = new Station(){
+                var station = new Station()
+                {
                     Name = request.Name,
                     Latitude = request.Latitude,
                     Longitude = request.Longitude,

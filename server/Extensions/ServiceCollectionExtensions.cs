@@ -66,8 +66,8 @@ public static class ServiceCollectionExtensions
                         Encoding.UTF8.GetBytes(settings.Secret)
                     ),
                     ValidateLifetime = true,
-                    RoleClaimType            = ClaimTypes.Role,
-                    NameClaimType            = JwtRegisteredClaimNames.Sub
+                    RoleClaimType = ClaimTypes.Role,
+                    NameClaimType = JwtRegisteredClaimNames.Sub
                 };
             });
 

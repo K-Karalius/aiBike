@@ -5,13 +5,27 @@ import {
   useEffect,
   useState,
 } from 'react';
+
 import {
   RegisterRequest,
   LoginRequest,
   LoginResponse,
+  RefreshTokenResponse,
 } from '../interfaces/auth';
-import { login, register } from '../apis/authApis';
-import { getToken, removeToken, setToken } from '../utils/secureStoreUtils';
+
+import { loginUser, refreshTokenApi, registerUser } from '../apis/authApis';
+
+import {
+  getEmail,
+  getRefreshToken,
+  removeEmail,
+  removeRefreshToken,
+  removeToken,
+  setEmail,
+  setRefreshToken,
+  setToken,
+} from '../utils/secureStoreUtils';
+
 import { router } from 'expo-router';
 
 interface User {
@@ -20,9 +34,13 @@ interface User {
 
 interface UserContextInterface {
   user: User | null;
+
   authChecked: boolean;
+
   userLogin: (params: LoginRequest) => Promise<void>;
+
   userRegister: (params: RegisterRequest) => Promise<void>;
+
   userLogout: () => void;
 }
 
@@ -40,10 +58,15 @@ export const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
   async function userLogin(props: LoginRequest) {
     try {
-      const response: LoginResponse = await login(props);
-      if (response.token) {
+      const response: LoginResponse = await loginUser(props);
+
+      if (response.accessToken && response.refreshToken) {
         setUser({ email: props.email });
-        setToken(response.token);
+
+        await setToken(response.accessToken);
+        await setRefreshToken(response.refreshToken);
+        await setEmail(props.email);
+
         router.replace('/');
       }
     } catch (err: any) {
@@ -53,7 +76,8 @@ export const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 
   async function userRegister(props: RegisterRequest) {
     try {
-      await register(props);
+      await registerUser(props);
+
       router.back();
     } catch (err: any) {
       console.error(err);
@@ -61,15 +85,34 @@ export const UserProvider = ({ children }: UserProviderProps): ReactElement => {
   }
 
   async function userLogout() {
-    removeToken();
+    await removeToken();
+    await removeRefreshToken();
+    await removeEmail();
+
     setUser(null);
   }
 
   async function getInitialUserValue() {
     try {
-      // endpoint to get user email or id by token
-      if (await getToken()) {
-        setUser(null);
+      const refreshToken = await getRefreshToken();
+
+      const email = await getEmail();
+
+      if (email && refreshToken) {
+        const response: RefreshTokenResponse = await refreshTokenApi({
+          refreshToken: refreshToken,
+        });
+
+        if (response.accessToken && refreshToken) {
+          await setToken(response.accessToken);
+          await setRefreshToken(response.refreshToken);
+          setUser({ email });
+        } else {
+          await removeToken();
+          await removeRefreshToken();
+          await removeEmail();
+          setUser(null);
+        }
       } else {
         setUser(null);
       }

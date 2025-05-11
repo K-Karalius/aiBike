@@ -78,7 +78,7 @@ export const UserProvider = ({ children }: UserProviderProps): ReactElement => {
     try {
       await registerUser(props);
 
-      router.back();
+      router.replace('/login');
     } catch (err: any) {
       console.error(err);
     }

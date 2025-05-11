@@ -13,5 +13,5 @@ public class GetBikeEndpoint : IEndpoint
                 var result = await dbContext.Bikes.FirstOrDefaultAsync(b => b.Id == id);
                 if (result == null) return Results.NotFound("Bike not found");
                 return Results.Ok(result);
-            }).AllowAnonymous();
+            });
 }

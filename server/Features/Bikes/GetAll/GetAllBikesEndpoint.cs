@@ -13,5 +13,5 @@ public class GetAllBikesEndpoint : IEndpoint
             {
                 var result = await dbContext.Bikes.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
                 return Results.Ok(result);
-            }).AllowAnonymous();
+            });
 }

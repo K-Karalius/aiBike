@@ -13,5 +13,5 @@ public class GetStationEndpoint : IEndpoint
                 var result = await dbContext.Stations.FirstOrDefaultAsync(b => b.Id == id);
                 if (result == null) return Results.NotFound("Station not found");
                 return Results.Ok(result);
-            }).AllowAnonymous();
+            });
 }

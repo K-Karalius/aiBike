@@ -13,5 +13,5 @@ public class GetAllReservationsEndpoint : IEndpoint
             {
                 var result = await dbContext.Reservations.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
                 return Results.Ok(result);
-            }).AllowAnonymous();
+            });
 }

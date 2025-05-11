@@ -13,5 +13,5 @@ public class GetReservationEndpoint : IEndpoint
                 var result = await dbContext.Reservations.FirstOrDefaultAsync(r => r.Id == id);
                 if (result == null) return Results.NotFound("Reservation not found");
                 return Results.Ok(result);
-            }).AllowAnonymous();
+            });
 }

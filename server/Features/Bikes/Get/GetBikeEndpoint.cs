@@ -10,7 +10,7 @@ public class GetBikeEndpoint : IEndpoint
         builder.MapGet("/api/bike/{id}",
             async (ApplicationDbContext dbContext, Guid id) =>
             {
-                var result = await dbContext.Bike.FirstOrDefaultAsync(b => b.Id == id);
+                var result = await dbContext.Bikes.FirstOrDefaultAsync(b => b.Id == id);
                 if (result == null) return Results.NotFound("Bike not found");
                 return Results.Ok(result);
             }).AllowAnonymous();

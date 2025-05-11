@@ -9,7 +9,7 @@ public class UpdateBikeEndpoint : IEndpoint
         builder.MapPatch("/api/bike/",
             async (ApplicationDbContext dbContext, UpdateBikeRequest request) =>
             {
-                var bike = dbContext.Bike.Find(request.Id);
+                var bike = dbContext.Bikes.Find(request.Id);
                 if (bike == null) return Results.NotFound("Bike not found");
                 bike.SerialNumber = request.SerialNumber;
                 bike.BikeStatus = request.BikeStatus;

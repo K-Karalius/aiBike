@@ -9,7 +9,7 @@ public class DeleteBikeEndpoint : IEndpoint
         builder.MapDelete("/api/bike/{id}",
             async (ApplicationDbContext dbContext, Guid id) =>
             {
-                var result = dbContext.Bike.FirstOrDefault(b => b.Id == id);
+                var result = dbContext.Bikes.FirstOrDefault(b => b.Id == id);
                 if (result == null) return Results.NotFound("Bike not found");
                 dbContext.Remove(result);
                 await dbContext.SaveChangesAsync();

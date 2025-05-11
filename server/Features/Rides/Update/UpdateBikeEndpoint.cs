@@ -9,7 +9,7 @@ public class UpdateRideEndpoint : IEndpoint
         builder.MapPatch("/api/ride/",
             async (ApplicationDbContext dbContext, UpdateRideRequest request) =>
             {
-                var Ride = dbContext.Ride.Find(request.Id);
+                var Ride = dbContext.Rides.Find(request.Id);
                 if (Ride == null) return Results.NotFound("Ride not found");
                 Ride.UserId = request.UserId;
                 Ride.BikeId = request.BikeId;

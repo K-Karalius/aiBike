@@ -2,13 +2,15 @@ import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   TextInput,
-  Button,
-  StyleSheet,
   ActivityIndicator,
+  Text,
+  Image,
+  Pressable,
 } from 'react-native';
 import { LoginRequest } from '../../interfaces/auth';
 import { UserContext } from '../../contexts/UserContext';
-import { Link, useNavigation } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
+import styles from '../../styles/authStyles';
 
 const LoginScreen = () => {
   const userContext = useContext(UserContext);
@@ -34,6 +36,12 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require('../../assets/images/bike-icon.png')}
+        style={styles.logo}
+      />
+      <Text style={styles.title}>aiBike</Text>
+      <Text style={styles.header}>Log in</Text>
       <TextInput
         value={email}
         onChangeText={setEmail}
@@ -54,36 +62,23 @@ const LoginScreen = () => {
         <ActivityIndicator size="large" color="#007bff" />
       ) : (
         <>
-          <Button title="Login" onPress={handleLogin} />
-          <Link href="/register" style={styles.link}>
-            Go to Register
-          </Link>
+          <Pressable style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Log in</Text>
+          </Pressable>
+          <Text style={styles.footer}>
+            Don’t have an account?{' '}
+            <Text
+              style={styles.link}
+              onPress={() => router.replace('/register')}
+            >
+              Sign up
+            </Text>{' '}
+            instead
+          </Text>
         </>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#fff',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    padding: 12,
-    marginBottom: 12,
-  },
-  link: {
-    marginTop: 16,
-    textAlign: 'center',
-    color: '#007bff',
-    textDecorationLine: 'underline',
-  },
-});
 
 export default LoginScreen;

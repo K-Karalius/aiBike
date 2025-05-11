@@ -10,7 +10,7 @@ public class GetRideEndpoint : IEndpoint
         builder.MapGet("/api/ride/{id}",
             async (ApplicationDbContext dbContext, Guid id) =>
             {
-                var result = await dbContext.Ride.FirstOrDefaultAsync(r => r.Id == id);
+                var result = await dbContext.Rides.FirstOrDefaultAsync(r => r.Id == id);
                 if (result == null) return Results.NotFound("Ride not found");
                 return Results.Ok(result);
             }).AllowAnonymous();

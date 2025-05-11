@@ -9,7 +9,7 @@ public class UpdateReservationEndpoint : IEndpoint
         builder.MapPatch("/api/reservation/",
             async (ApplicationDbContext dbContext, UpdateReservationRequest request) =>
             {
-                var reservation = dbContext.Reservation.Find(request.Id);
+                var reservation = dbContext.Reservations.Find(request.Id);
                 if (reservation == null) return Results.NotFound("Reservation not found");
                 reservation.UserId = request.UserId;
                 reservation.BikeId = request.BikeId;

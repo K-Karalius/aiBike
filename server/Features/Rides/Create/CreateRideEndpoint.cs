@@ -10,7 +10,8 @@ public class CreateRideEndpoint : IEndpoint
         builder.MapPost("/api/ride/",
             async (ApplicationDbContext dbContext, CreateRideRequest request) =>
             {
-                var Ride = new Ride(){
+                var Ride = new Ride()
+                {
                     UserId = request.UserId,
                     BikeId = request.BikeId,
                     StartStationId = request.StartStationId,

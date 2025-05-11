@@ -2,11 +2,11 @@
 
 namespace server.Features.Auth.Login;
 
-public class LoginEndpoint : IEndpoint
+public class RefreshEndpoint : IEndpoint
 {
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder) =>
-        builder.MapPost("/api/auth/login",
-            async (LoginRequest request, ICommandHandler<LoginRequest, AuthResponse> handler) =>
+        builder.MapPost("/api/auth/refresh",
+            async (RefreshTokenRequest request, ICommandHandler<RefreshTokenRequest, AuthResponse> handler) =>
             {
                 var result = await handler.Handle(request);
                 return result.IsSuccess

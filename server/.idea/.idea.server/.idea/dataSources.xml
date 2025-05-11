@@ -9,5 +9,12 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/project?password=project&amp;user=project</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="aybike_db@dpg-d0aa21buibrs73bk9a0g-a.frankfurt-postgres.render.com" uuid="58930fd7-e8e3-4044-8223-873093e8eb81">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://dpg-d0aa21buibrs73bk9a0g-a.frankfurt-postgres.render.com:5432/aybike_db</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

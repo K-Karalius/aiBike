@@ -9,7 +9,7 @@ public class DeleteStationEndpoint : IEndpoint
         builder.MapDelete("/api/station/{id}",
             async (ApplicationDbContext dbContext, Guid id) =>
             {
-                var result = dbContext.Station.FirstOrDefault(b => b.Id == id);
+                var result = dbContext.Stations.FirstOrDefault(b => b.Id == id);
                 if (result == null) return Results.NotFound("Station not found");
                 dbContext.Remove(result);
                 await dbContext.SaveChangesAsync();

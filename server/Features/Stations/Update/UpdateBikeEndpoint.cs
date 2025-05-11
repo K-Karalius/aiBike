@@ -9,7 +9,7 @@ public class UpdateStationEndpoint : IEndpoint
         builder.MapPatch("/api/station/",
             async (ApplicationDbContext dbContext, UpdateStationRequest request) =>
             {
-                var station = dbContext.Station.Find(request.Id);
+                var station = dbContext.Stations.Find(request.Id);
                 if (station == null) return Results.NotFound("Station not found");
                 station.Name = request.Name;
                 station.Latitude = request.Latitude;

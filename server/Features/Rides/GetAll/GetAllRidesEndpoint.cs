@@ -13,5 +13,5 @@ public class GetAllRidesEndpoint : IEndpoint
             {
                 var result = await dbContext.Rides.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
                 return Results.Ok(result);
-            }).AllowAnonymous();
+            });
 }

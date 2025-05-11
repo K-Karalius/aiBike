@@ -13,5 +13,5 @@ public class GetRideEndpoint : IEndpoint
                 var result = await dbContext.Rides.FirstOrDefaultAsync(r => r.Id == id);
                 if (result == null) return Results.NotFound("Ride not found");
                 return Results.Ok(result);
-            }).AllowAnonymous();
+            });
 }

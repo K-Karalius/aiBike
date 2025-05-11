@@ -114,12 +114,26 @@ public static class ServiceCollectionExtensions
         services.AddJwtOptions(configuration);
         services.AddJwtAuthentication();
 
-        services.AddAuthorizationBuilder()
-            .AddPolicy(AuthorizationPolicies.AdminOnly, policy => policy.RequireRole(Roles.Admin.ToString().ToUpperInvariant())
-            )
-            .AddPolicy(AuthorizationPolicies.UserOrAdmin,
-                policy => policy.RequireRole(Roles.User.ToString().ToUpperInvariant(), Roles.Admin.ToString().ToUpperInvariant())
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(
+                AuthorizationPolicies.UserOrAdmin,
+                policy => policy.RequireRole(
+                    Roles.User.ToString().ToUpperInvariant(),
+                    Roles.Admin.ToString().ToUpperInvariant()
+                )
             );
+
+            options.AddPolicy(
+                AuthorizationPolicies.AdminOnly,
+                policy => policy.RequireRole(
+                    Roles.Admin.ToString().ToUpperInvariant()
+                )
+            );
+
+            var userOrAdmin = options.GetPolicy(AuthorizationPolicies.UserOrAdmin)!;
+            options.FallbackPolicy = userOrAdmin;
+        });
 
         return services;
     }

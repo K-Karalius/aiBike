@@ -4,17 +4,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Common.Authorization;
 using DatabaseContext;
+using server.Common.Abstractions;
 
-public static class GetAllStationsEndpoint
+
+public class GetAllStationsEndpoint : IEndpoint
 {
     private const double EarthRadiusKm = 6371.0;
     private const double ToRadians = Math.PI / 180.0;
 
-    public static RouteHandlerBuilder MapGetAllStations(this IEndpointRouteBuilder app)
-        => app.MapGet("/api/station", HandleGetAllStations)
-              .RequireAuthorization(AuthorizationPolicies.UserOrAdmin);
-
-    private static async Task<IResult> HandleGetAllStations(
+    public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
+        => builder.MapGet("/api/station", HandleGetAllStations)
+            .RequireAuthorization(AuthorizationPolicies.UserOrAdmin);
+    private async Task<IResult> HandleGetAllStations(
         ApplicationDbContext dbContext,
         [FromQuery] decimal latitude,
         [FromQuery] decimal longitude,
@@ -70,7 +71,7 @@ public static class GetAllStationsEndpoint
         return Results.Ok(nearbyPaged);
     }
 
-    private static double CalculateDistanceInKilometers(
+    private double CalculateDistanceInKilometers(
         double userLatDeg,
         double userLonDeg,
         double stationLatDeg,

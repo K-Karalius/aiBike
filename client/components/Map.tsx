@@ -5,13 +5,13 @@ import { Station } from '@/interfaces/station';
 import { getStationsService } from '@/services/station';
 import CustomMarker from './CustomMarker';
 
-const MAP_DELTA = 0.01
-const WAIT_TIMER_IN_SECONDS = 1
+const MAP_DELTA: number = 0.01;
+const WAIT_TIMER_IN_SECONDS: number = 1;
 
 export default function Map() {
   const [location, setLocation] = useState<Region | undefined>(undefined);
   const [stations, setStations] = useState<Station[]>([]);
-  const [isLoaded, setLoaded] = useState<Boolean>(false);
+  const [isLoaded, setLoaded] = useState<boolean>(false);
   const timeoutRef = useRef<number>(0);
 
   useEffect(() => {
@@ -30,31 +30,30 @@ export default function Map() {
         latitudeDelta: MAP_DELTA,
         longitudeDelta: MAP_DELTA,
       });
-      
     };
 
-    if(location === undefined) {
+    if (location === undefined) {
       getLocation();
       getStations();
     }
 
     setLoaded(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded]);
 
   const getStations = async () => {
     const response = await getStationsService(location);
     setStations(response);
-  }
+  };
 
   const updateMapStations = async (region: Region) => {
     setLocation(region);
-    if(timeoutRef.current)
-      clearTimeout(timeoutRef.current);
-    
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
     timeoutRef.current = setTimeout(async () => {
       getStations();
       setLoaded(false);
-    }, WAIT_TIMER_IN_SECONDS*1000);
+    }, WAIT_TIMER_IN_SECONDS * 1000);
   };
 
   return (
@@ -66,7 +65,7 @@ export default function Map() {
       onRegionChangeComplete={updateMapStations}
     >
       {stations.map((station: Station, index) => (
-        <CustomMarker station={station} onPressMarker={() => {}} key={index}/>
+        <CustomMarker station={station} onPressMarker={() => {}} key={index} />
       ))}
     </MapView>
   );

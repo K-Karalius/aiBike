@@ -3,18 +3,18 @@ import { StyleSheet, Image, Text, View } from 'react-native';
 import { Marker, MarkerPressEvent } from 'react-native-maps';
 
 interface Props {
-  station: Station,
+  station: Station;
   onPressMarker: (event: MarkerPressEvent) => void;
 }
 
-export default function CustomMarker({station, onPressMarker}: Props) {
+export default function CustomMarker({ station, onPressMarker }: Props) {
   return (
     <Marker
       coordinate={{ latitude: station.latitude, longitude: station.longitude }}
-      onPress = {onPressMarker}
+      onPress={onPressMarker}
     >
       <View style={styles.markerContainer}>
-        <View style={styles.markerBackground}/>
+        <View style={styles.markerBackground} />
         <Image
           source={require('@/assets/images/station.png')}
           style={styles.markerStyle}
@@ -49,5 +49,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 10,
     backgroundColor: 'white',
-  }
+  },
 });

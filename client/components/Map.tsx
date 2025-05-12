@@ -1,14 +1,22 @@
-import { StyleSheet } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
-import MapView, { Marker, Region } from 'react-native-maps';
+import MapView, { Region } from 'react-native-maps';
+import { Station } from '@/interfaces/station';
+import { getStationsService } from '@/services/station';
+import CustomMarker from './CustomMarker';
+
+const MAP_DELTA = 0.01
+const WAIT_TIMER_IN_SECONDS = 1
 
 export default function Map() {
   const [location, setLocation] = useState<Region | undefined>(undefined);
+  const [stations, setStations] = useState<Station[]>([]);
+  const [isLoaded, setLoaded] = useState<Boolean>(false);
+  const timeoutRef = useRef<number>(0);
 
   useEffect(() => {
     const getLocation = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+      const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         alert('Permission to access location was denied');
         setLocation(undefined);
@@ -19,22 +27,47 @@ export default function Map() {
       setLocation({
         latitude: userLocation.coords.latitude,
         longitude: userLocation.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
+        latitudeDelta: MAP_DELTA,
+        longitudeDelta: MAP_DELTA,
       });
+      
     };
 
-    getLocation();
-  }, []);
+    if(location === undefined) {
+      getLocation();
+      getStations();
+    }
+
+    setLoaded(true);
+  }, [isLoaded]);
+
+  const getStations = async () => {
+    const response = await getStationsService(location);
+    setStations(response);
+  }
+
+  const updateMapStations = async (region: Region) => {
+    setLocation(region);
+    if(timeoutRef.current)
+      clearTimeout(timeoutRef.current);
+    
+    timeoutRef.current = setTimeout(async () => {
+      getStations();
+      setLoaded(false);
+    }, WAIT_TIMER_IN_SECONDS*1000);
+  };
+
   return (
     <MapView
-      style={StyleSheet.absoluteFill}
+      style={{ flex: 1, marginTop: 50 }} // Margin top used for now to not interfere with the camera, use SafeAreaView laters
       customMapStyle={customMapStyle}
       initialRegion={location}
       showsUserLocation={true}
+      onRegionChangeComplete={updateMapStations}
     >
-      {/* TODO: Generate markers based on the location of the item*/}
-      <Marker coordinate={{ latitude: 54.7, longitude: 25.3 }}></Marker>
+      {stations.map((station: Station, index) => (
+        <CustomMarker station={station} onPressMarker={() => {}} key={index}/>
+      ))}
     </MapView>
   );
 }

@@ -2,15 +2,16 @@ import React, { useContext, useState, useEffect } from 'react';
 import {
   View,
   TextInput,
-  Button,
-  StyleSheet,
   ActivityIndicator,
   Text,
+  Image,
+  Pressable,
 } from 'react-native';
 import { UserContext } from '../../contexts/UserContext';
 import { RegisterRequest } from '../../interfaces/auth';
-import { useNavigation } from 'expo-router';
+import { useNavigation, router } from 'expo-router';
 import { EMAIL_RULE, PASSWORD_RULES } from '../../utils/regexUtils';
+import styles from '../../styles/authStyles';
 
 const RegisterScreen = () => {
   const userContext = useContext(UserContext);
@@ -55,6 +56,12 @@ const RegisterScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require('../../assets/images/bike-icon.png')}
+        style={styles.logo}
+      />
+      <Text style={styles.title}>aiBike</Text>
+      <Text style={styles.header}>Sign up</Text>
       <TextInput
         value={email}
         onChangeText={setEmail}
@@ -80,38 +87,21 @@ const RegisterScreen = () => {
       {isLoading ? (
         <ActivityIndicator size="large" color="#007bff" />
       ) : (
-        <Button title="Register" onPress={handleRegister} />
+        <>
+          <Pressable style={styles.button} onPress={handleRegister}>
+            <Text style={styles.buttonText}>Sign up</Text>
+          </Pressable>
+          <Text style={styles.footer}>
+            Already a member?{' '}
+            <Text style={styles.link} onPress={() => router.replace('/login')}>
+              Log in
+            </Text>{' '}
+            instead
+          </Text>
+        </>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#fff',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    padding: 12,
-    marginBottom: 12,
-  },
-  errorBox: {
-    borderWidth: 1,
-    borderColor: 'red',
-    backgroundColor: '#ffcccc',
-    padding: 12,
-    marginBottom: 12,
-    borderRadius: 6,
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 14,
-  },
-});
 
 export default RegisterScreen;

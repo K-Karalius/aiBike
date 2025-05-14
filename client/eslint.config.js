@@ -21,6 +21,7 @@ module.exports = defineConfig([
           singleQuote: true,
           tabWidth: 2,
           jsxSingleQuote: false,
+          endOfLine: 'auto',
         },
       ],
     },

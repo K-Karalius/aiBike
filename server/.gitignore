@@ -65,3 +65,6 @@ Migrations/**/*.Snapshot.cs
 # OS generated files
 .DS_Store
 Thumbs.db
+
+connectionStrings.json
+.idea/

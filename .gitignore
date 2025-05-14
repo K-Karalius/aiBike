@@ -98,3 +98,9 @@ yarn-error.log*
 
 # Database connection string
 server/connectionStrings.json
+
+# Ignore all .env files
+**/.env*
+
+# Ignore IDE configs
+.idea/

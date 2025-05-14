@@ -58,6 +58,7 @@ cd clientApp
 Install expo dependencies:
 
 ```bash
+npm install expo
 npx expo install
 ```
 

@@ -104,3 +104,116 @@ server/connectionStrings.json
 
 # Ignore IDE configs
 .idea/
+
+# Logs
+Logs/
+*.log
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+/bin/
+/obj/
+
+# NuGet
+*.nupkg
+/packages/
+.project.lock.json
+*.snupkg
+
+# Microsoft Azure Web App publish settings
+*.PublishSettings
+
+# Publish outputs
+/*.Publish.xml
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+
+# ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# TeamCity
+.teamcity/
+
+# DotCover
+*.dotCover
+
+# NCrunch
+*.ncrunch*
+_nCrunch_*
+
+# Coverlet coverage
+coverage*.json
+coverage*.xml
+coverage*.info
+
+# StyleCop
+StyleCopReport.xml
+
+# EF Core Migrations snapshots
+Migrations/**/*.Snapshot.cs
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+connectionStrings.json
+.idea/
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+#vs code
+.vscode/
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+.env
+
+# typescript
+*.tsbuildinfo
+
+app-example

@@ -1,9 +1,9 @@
-import { Station } from '@/interfaces/station';
+import { GetStationRange, Station } from '@/interfaces/station';
 import { StyleSheet, Image, Text, View } from 'react-native';
 import { Marker, MarkerPressEvent } from 'react-native-maps';
 
 interface Props {
-  station: Station;
+  station: GetStationRange;
   onPressMarker: (event: MarkerPressEvent) => void;
 }
 
@@ -19,7 +19,7 @@ export default function CustomMarker({ station, onPressMarker }: Props) {
           source={require('@/assets/images/station.png')}
           style={styles.markerStyle}
         />
-        <Text style={styles.markerText}>{station.bikes?.length}</Text>
+        <Text style={styles.markerText}>{station.bikeCount}</Text>
       </View>
     </Marker>
   );

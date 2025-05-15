@@ -1,5 +1,6 @@
 import {
   CreateStationRequest,
+  GetStationRange,
   GetStationsRequest,
   Station,
 } from '@/interfaces/station';
@@ -18,9 +19,9 @@ export const getStation = async (id: number): Promise<Station> => {
   return response.data;
 };
 
-export const getStations = async (
+export const getStationsInRange = async (
   data: GetStationsRequest,
-): Promise<Station[]> => {
+): Promise<GetStationRange[]> => {
   const response = await api.get('/station', { params: data });
   return response.data;
 };

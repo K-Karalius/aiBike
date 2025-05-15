@@ -9,6 +9,15 @@ export interface Station {
   bikes?: Bike[];
 }
 
+export interface GetStationRange {
+  id: string;
+  name: string;
+  capacity: number;
+  latitude: number;
+  longitude: number;
+  bikeCount: number;
+}
+
 export interface CreateStationRequest {
   name: string;
   latitude: number;

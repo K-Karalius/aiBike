@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
 import MapView, { Region } from 'react-native-maps';
-import { GetStationRange, Station } from '@/interfaces/station';
+import { GetStationRange } from '@/interfaces/station';
 import { getStationsInRangeService } from '@/services/station';
 import CustomMarker from './CustomMarker';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const MAP_DELTA: number = 0.01;
 const WAIT_TIMER_IN_SECONDS: number = 1;
@@ -13,6 +14,7 @@ export default function Map() {
   const [stations, setStations] = useState<GetStationRange[]>([]);
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const timeoutRef = useRef<number>(0);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const getLocation = async () => {
@@ -58,11 +60,18 @@ export default function Map() {
 
   return (
     <MapView
-      style={{ flex: 1, marginTop: 50 }} // Margin top used for now to not interfere with the camera, use SafeAreaView laters
+      style={{ flex: 1 }}
       customMapStyle={customMapStyle}
       initialRegion={location}
       showsUserLocation={true}
       onRegionChangeComplete={updateMapStations}
+      showsCompass={false}
+      mapPadding={{
+        top: insets.top,
+        bottom: insets.bottom,
+        left: insets.left,
+        right: insets.right,
+      }}
     >
       {stations.map((station: GetStationRange, index) => (
         <CustomMarker station={station} onPressMarker={() => {}} key={index} />

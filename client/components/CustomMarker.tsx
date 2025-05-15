@@ -1,4 +1,4 @@
-import { GetStationRange, Station } from '@/interfaces/station';
+import { GetStationRange } from '@/interfaces/station';
 import { StyleSheet, Image, Text, View } from 'react-native';
 import { Marker, MarkerPressEvent } from 'react-native-maps';
 

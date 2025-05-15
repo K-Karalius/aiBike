@@ -217,3 +217,5 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+client/.gitignore

@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
 import MapView, { Region } from 'react-native-maps';
-import { Station } from '@/interfaces/station';
-import { getStationsService } from '@/services/station';
+import { GetStationRange, Station } from '@/interfaces/station';
+import { getStationsInRangeService } from '@/services/station';
 import CustomMarker from './CustomMarker';
 
 const MAP_DELTA: number = 0.01;
@@ -10,7 +10,7 @@ const WAIT_TIMER_IN_SECONDS: number = 1;
 
 export default function Map() {
   const [location, setLocation] = useState<Region | undefined>(undefined);
-  const [stations, setStations] = useState<Station[]>([]);
+  const [stations, setStations] = useState<GetStationRange[]>([]);
   const [isLoaded, setLoaded] = useState<boolean>(false);
   const timeoutRef = useRef<number>(0);
 
@@ -42,7 +42,7 @@ export default function Map() {
   }, [isLoaded]);
 
   const getStations = async () => {
-    const response = await getStationsService(location);
+    const response = await getStationsInRangeService(location);
     setStations(response);
   };
 
@@ -64,7 +64,7 @@ export default function Map() {
       showsUserLocation={true}
       onRegionChangeComplete={updateMapStations}
     >
-      {stations.map((station: Station, index) => (
+      {stations.map((station: GetStationRange, index) => (
         <CustomMarker station={station} onPressMarker={() => {}} key={index} />
       ))}
     </MapView>

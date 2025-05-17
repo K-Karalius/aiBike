@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
 import MapView, { Region, Details, PROVIDER_GOOGLE } from 'react-native-maps';
-import { GetStationRange, Station } from '@/interfaces/station';
+import { GetStationRange } from '@/interfaces/station';
 import { getStationsInRangeService } from '@/services/station';
 import CustomMarker from './CustomMarker';
 
 const MAP_DELTA: number = 0.01;
-const WAIT_TIMER_IN_SECONDS: number = 1;
 
 export default function Map() {
   const [location, setLocation] = useState<Region>({

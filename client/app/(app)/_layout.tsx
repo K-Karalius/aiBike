@@ -3,9 +3,11 @@ import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { UserContext } from '@/contexts/UserContext';
 import { TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AppLayout() {
   const userContext = useContext(UserContext);
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -17,8 +19,8 @@ export default function AppLayout() {
           backgroundColor: 'white',
           borderTopWidth: 1,
           borderTopColor: '#e0e0e0',
-          height: 60,
-          paddingBottom: 8,
+          height: 60 + insets.bottom, // Add bottom inset to tab bar height
+          paddingBottom: 8 + insets.bottom, // Add bottom inset to padding
           paddingTop: 8,
         },
         headerRight: () => (

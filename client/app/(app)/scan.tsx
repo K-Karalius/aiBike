@@ -2,23 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import UserOnly from '@/components/auth/UserOnly';
-import { Camera, CameraType, BarCodeScanningResult } from 'expo-camera';
+import { useCameraPermissions } from 'expo-camera';
 import { Bike, BikeStatus } from '@/interfaces/bike';
 import { getBike } from '@/apis/bikeApis';
+import { getStation } from '@/apis/stationApis';
+import BikeScanner from '@/components/BikeScanner';
 
 export default function ScanScreen() {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [permission, requestPermission] = useCameraPermissions();
   const [scanning, setScanning] = useState(false);
   const [scannedBike, setScannedBike] = useState<Bike | null>(null);
   const [loading, setLoading] = useState(false);
+  const [stationName, setStationName] = useState<string | null>(null);
 
   useEffect(() => {
-    // Request camera permissions on component mount
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  }, []);
+    if (scannedBike?.currentStationId) {
+      getStation(scannedBike.currentStationId)
+        .then((station) => setStationName(station.name))
+        .catch((err) => {
+          console.error('Error fetching station:', err);
+          setStationName('Unknown');
+        });
+    } else {
+      setStationName(null);
+    }
+  }, [scannedBike?.currentStationId]);
+
+  useEffect(() => {
+    if (!permission || !permission.granted) {
+      requestPermission();
+    }
+  }, [permission, requestPermission]);
 
   const startScan = () => {
     setScanning(true);
@@ -29,21 +43,12 @@ export default function ScanScreen() {
     setScanning(false);
   };
 
-  const handleBarCodeScanned = async ({
-    type,
-    data,
-  }: BarCodeScanningResult) => {
+  const handleBarCodeScanned = async (data: string) => {
     stopScan();
     setLoading(true);
 
     try {
-      // Process the QR code data - assuming it contains the bike ID as a number
-      // In a real app, you might need to validate or parse the QR format
-      const bikeId = parseInt(data);
-
-      if (isNaN(bikeId)) {
-        throw new Error('Invalid QR code: not a valid bike ID');
-      }
+      const bikeId = data;
 
       // Fetch bike information using the API
       const bike = await getBike(bikeId);
@@ -92,17 +97,27 @@ export default function ScanScreen() {
   };
 
   const renderContent = () => {
-    if (hasPermission === null) {
+    if (!permission) {
       return (
         <Text style={styles.messageText}>Requesting camera permission...</Text>
       );
     }
 
-    if (hasPermission === false) {
+    if (!permission.granted) {
       return (
-        <Text style={styles.messageText}>
-          No access to camera. Please enable camera permissions.
-        </Text>
+        <View style={{ padding: 20, alignItems: 'center' }}>
+          <Text style={styles.messageText}>
+            No access to camera. Please enable camera permissions.
+          </Text>
+          <TouchableOpacity
+            style={styles.scanButton}
+            onPress={() => requestPermission()}
+          >
+            <Text style={{ color: 'white', fontWeight: 'bold' }}>
+              Grant Permission
+            </Text>
+          </TouchableOpacity>
+        </View>
       );
     }
 
@@ -120,11 +135,6 @@ export default function ScanScreen() {
           <Text style={styles.bikeInfoTitle}>Bike Found</Text>
 
           <View style={styles.bikeInfoCard}>
-            <View style={styles.bikeInfoRow}>
-              <Text style={styles.bikeInfoLabel}>ID:</Text>
-              <Text style={styles.bikeInfoValue}>{scannedBike.id}</Text>
-            </View>
-
             <View style={styles.bikeInfoRow}>
               <Text style={styles.bikeInfoLabel}>Serial Number:</Text>
               <Text style={styles.bikeInfoValue}>
@@ -148,12 +158,10 @@ export default function ScanScreen() {
               </View>
             </View>
 
-            {scannedBike.currentStationId && (
+            {stationName && (
               <View style={styles.bikeInfoRow}>
                 <Text style={styles.bikeInfoLabel}>Station:</Text>
-                <Text style={styles.bikeInfoValue}>
-                  {scannedBike.currentStationId}
-                </Text>
+                <Text style={styles.bikeInfoValue}>{stationName}</Text>
               </View>
             )}
           </View>
@@ -181,24 +189,10 @@ export default function ScanScreen() {
 
     if (scanning) {
       return (
-        <View style={styles.cameraContainer}>
-          <Camera
-            style={StyleSheet.absoluteFillObject}
-            type={CameraType.back}
-            barCodeScannerSettings={{
-              barCodeTypes: ['qr'],
-            }}
-            onBarCodeScanned={handleBarCodeScanned}
-          >
-            <View style={styles.scanningOverlay}>
-              <View style={styles.scanFrame} />
-              <Text style={styles.scanningText}>Scanning for QR code...</Text>
-              <TouchableOpacity style={styles.cancelButton} onPress={stopScan}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </Camera>
-        </View>
+        <BikeScanner
+          onScanSuccess={handleBarCodeScanned}
+          onScanCancel={stopScan}
+        />
       );
     } else {
       return (
@@ -234,42 +228,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-  },
-  cameraContainer: {
-    width: '100%',
-    height: '100%',
-  },
-  scanningOverlay: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scanningText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 20,
-    color: '#ffffff',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    padding: 10,
-    borderRadius: 5,
-  },
-  scanFrame: {
-    width: 250,
-    height: 250,
-    borderWidth: 2,
-    borderColor: '#007bff',
-    borderRadius: 12,
-  },
-  cancelButton: {
-    marginTop: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-  },
-  cancelButtonText: {
-    color: 'white',
-    fontWeight: '500',
   },
   startScanContainer: {
     alignItems: 'center',

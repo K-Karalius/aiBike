@@ -56,5 +56,8 @@
     "jscodeshift": "^0.15.2",
     "typescript": "~5.8.3"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "config": "app.config.js"
+  }
 }

@@ -68,7 +68,6 @@ export default {
         projectId: 'afff7d5c-f79e-47c0-a14c-74a27b18990b',
       },
     },
-    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
     owner: 'beehen',
   },
 };

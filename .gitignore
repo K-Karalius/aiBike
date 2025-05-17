@@ -219,3 +219,5 @@ yarn-error.*
 app-example
 
 client/.gitignore
+client/android
+client/ios

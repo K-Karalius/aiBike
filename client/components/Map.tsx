@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
-import MapView, { Region, Details } from 'react-native-maps';
+import MapView, { Region, Details, PROVIDER_GOOGLE } from 'react-native-maps';
 import { GetStationRange, Station } from '@/interfaces/station';
 import { getStationsInRangeService } from '@/services/station';
 import CustomMarker from './CustomMarker';
@@ -65,6 +65,7 @@ export default function Map() {
     <MapView
       ref={mapRef}
       style={{ flex: 1 }}
+      provider={PROVIDER_GOOGLE}
       initialRegion={location}
       onRegionChangeComplete={updateMapStations}
       customMapStyle={customMapStyle}

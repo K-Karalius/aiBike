@@ -10,7 +10,7 @@ public class StartRideEndpoint : IEndpoint
         builder.MapPatch("/api/ride/end",
             async (ApplicationDbContext dbContext, UpdateBikeRequest request) =>
             {
-                var ride = dbContext.Ride.Find(request.Id);
+                var ride = dbContext.Rides.Find(request.Id);
                 if(ride == null) return Results.NotFound("Ride not found");
                 if(ride.RideStatus != RideStatus.Ongoing) return Results.BadRequest("The ride has already ended.");
                 ride.RideStatus = RideStatus.Finished;

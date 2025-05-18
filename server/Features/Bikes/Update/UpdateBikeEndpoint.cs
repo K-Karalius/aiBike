@@ -15,6 +15,8 @@ public class UpdateBikeEndpoint : IEndpoint
                 if(request.SerialNumber != null) bike.SerialNumber = request.SerialNumber;
                 if(request.BikeStatus != null) bike.BikeStatus = (Models.BikeStatus) request.BikeStatus;
                 if(request.CurrentStationId != null) bike.CurrentStationId = request.CurrentStationId;
+                if(request.Latitude != null) bike.Latitude = (decimal) request.Latitude;
+                if(request.Longitude != null) bike.Longitude = (decimal) request.Longitude;
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(bike);
             }).RequireAuthorization(AuthorizationPolicies.AdminOnly);

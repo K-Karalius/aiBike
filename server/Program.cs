@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile("connectionStrings.json", optional: true, reloadOnChange: true);
+    .AddJsonFile("connectionStrings.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
 builder.Host.UseSerilog((hostCtx, loggerConfig) => loggerConfig

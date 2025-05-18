@@ -24,10 +24,4 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.9.0" />
     </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Models\Reservation.cs" />
-      <Compile Remove="Models\BikeStatus.cs" />
-    </ItemGroup>
-
 </Project>

@@ -11,9 +11,10 @@ public class UpdateStationEndpoint : IEndpoint
             {
                 var station = dbContext.Station.Find(request.Id);
                 if (station == null) return Results.NotFound("Station not found");
-                station.Name = request.Name;
-                station.Latitude = request.Latitude;
-                station.Longitude = request.Longitude;
+                if (request.Name != null) station.Name = request.Name;
+                if (request.Latitude != null) station.Latitude = (decimal) request.Latitude;
+                if (request.Longitude != null) station.Longitude = (decimal) request.Longitude;
+                if (request.Capacity != null) station.Capacity = (int) request.Capacity;
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(station);
             });

@@ -7,14 +7,14 @@ namespace server.Features.Rides.Create;
 public class CreateRideEndpoint : IEndpoint
 {
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder) =>
-        builder.MapPost("/api/ride/",
+        builder.MapPost("/api/ride/start",
             async (ApplicationDbContext dbContext, CreateRideRequest request) =>
             {
                 var Ride = new Ride(){
                     UserId = request.UserId,
                     BikeId = request.BikeId,
                     StartStationId = request.StartStationId,
-                    RideStatus = request.RideStatus,
+                    RideStatus = RideStatus.Ongoing,
                     StartedAtUTC = DateTime.UtcNow,
                     FareAmount = 0,
                     DistanceMeters = 0

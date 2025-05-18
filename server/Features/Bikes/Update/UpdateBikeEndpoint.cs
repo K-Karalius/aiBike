@@ -11,9 +11,9 @@ public class UpdateBikeEndpoint : IEndpoint
             {
                 var bike = dbContext.Bike.Find(request.Id);
                 if (bike == null) return Results.NotFound("Bike not found");
-                bike.SerialNumber = request.SerialNumber;
-                bike.BikeStatus = request.BikeStatus;
-                bike.CurrentStationId = request.CurrentStationId;
+                if(request.SerialNumber != null) bike.SerialNumber = request.SerialNumber;
+                if(request.BikeStatus != null) bike.BikeStatus = (Models.BikeStatus) request.BikeStatus;
+                if(request.CurrentStationId != null) bike.CurrentStationId = request.CurrentStationId;
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(bike);
             });

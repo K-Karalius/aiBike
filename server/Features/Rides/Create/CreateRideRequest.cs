@@ -8,5 +8,4 @@ public record CreateRideRequest
     public Guid? BikeId { get; init;}
     public Guid? StartStationId { get; init;}
     public Guid? EndStationId { get; init;}
-    public RideStatus RideStatus { get; init;}
 }

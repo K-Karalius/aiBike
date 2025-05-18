@@ -14,6 +14,6 @@ public static class HttpContextExtensions
             .Select(c => c.Value)
             .ToList();
     
-    public static bool CurrentUserIsAdmin(this HttpContext context) =>
+    public static bool IsCurrentUserAdmin(this HttpContext context) =>
         context.User.IsInRole(Roles.Admin.ToString());
 }

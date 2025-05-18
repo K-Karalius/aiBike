@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 
 namespace server.Features.Stations.Update;
@@ -16,5 +17,5 @@ public class UpdateStationEndpoint : IEndpoint
                 station.Longitude = request.Longitude;
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(station);
-            });
+            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
 }

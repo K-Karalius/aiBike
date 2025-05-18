@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 
 namespace server.Features.Reservations.Update;
@@ -19,5 +20,5 @@ public class UpdateReservationEndpoint : IEndpoint
                 reservation.ReservationStatus = request.ReservationStatus;
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(reservation);
-            });
+            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
 }

@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 using server.Models;
 

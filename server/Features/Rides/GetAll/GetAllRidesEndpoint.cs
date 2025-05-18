@@ -11,7 +11,7 @@ public class GetAllRidesEndpoint : IEndpoint
         builder.MapGet("/api/ride/",
             async (ApplicationDbContext dbContext, [FromQuery] int page = 1, [FromQuery] int pageSize = 50) =>
             {
-                var result = await dbContext.Ride.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                var result = await dbContext.Rides.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
                 return Results.Ok(result);
-            }).AllowAnonymous();
+            });
 }

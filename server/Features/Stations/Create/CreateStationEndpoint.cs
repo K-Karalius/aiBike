@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 using server.Models;
 
@@ -10,7 +11,8 @@ public class CreateStationEndpoint : IEndpoint
         builder.MapPost("/api/station/",
             async (ApplicationDbContext dbContext, CreateStationRequest request) =>
             {
-                var station = new Station(){
+                var station = new Station()
+                {
                     Name = request.Name,
                     Latitude = request.Latitude,
                     Longitude = request.Longitude,
@@ -19,5 +21,5 @@ public class CreateStationEndpoint : IEndpoint
                 await dbContext.AddAsync(station);
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(station);
-            });
+            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
 }

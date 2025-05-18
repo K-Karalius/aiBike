@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 using server.Models;
 
@@ -10,7 +11,8 @@ public class CreateReservationEndpoint : IEndpoint
         builder.MapPost("/api/reservation/",
             async (ApplicationDbContext dbContext, CreateReservationRequest request) =>
             {
-                var reservation = new Reservation(){
+                var reservation = new Reservation()
+                {
                     UserId = request.UserId,
                     BikeId = request.BikeId,
                     StationId = request.StationId,

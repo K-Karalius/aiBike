@@ -10,8 +10,8 @@ public class GetStationEndpoint : IEndpoint
         builder.MapGet("/api/station/{id}",
             async (ApplicationDbContext dbContext, Guid id) =>
             {
-                var result = await dbContext.Station.FirstOrDefaultAsync(b => b.Id == id);
+                var result = await dbContext.Stations.FirstOrDefaultAsync(b => b.Id == id);
                 if (result == null) return Results.NotFound("Station not found");
                 return Results.Ok(result);
-            }).AllowAnonymous();
+            });
 }

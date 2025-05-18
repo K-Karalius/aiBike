@@ -11,7 +11,7 @@ public class GetAllBikesEndpoint : IEndpoint
         builder.MapGet("/api/bike/",
             async (ApplicationDbContext dbContext, [FromQuery] int page = 1, [FromQuery] int pageSize = 50) =>
             {
-                var result = await dbContext.Bike.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                var result = await dbContext.Bikes.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
                 return Results.Ok(result);
-            }).AllowAnonymous();
+            });
 }

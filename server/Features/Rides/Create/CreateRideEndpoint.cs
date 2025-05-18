@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 using server.Models;
 
@@ -10,7 +11,8 @@ public class CreateRideEndpoint : IEndpoint
         builder.MapPost("/api/ride/start",
             async (ApplicationDbContext dbContext, CreateRideRequest request) =>
             {
-                var Ride = new Ride(){
+                var Ride = new Ride()
+                {
                     UserId = request.UserId,
                     BikeId = request.BikeId,
                     StartStationId = request.StartStationId,

@@ -5,6 +5,7 @@
 ## System Requirements
 
 - .NET SDK 8.0.0
+- Node.js 18.0.0
 
 ## Initial Setup
 
@@ -40,6 +41,27 @@ To stop and remove the containers, including their volumes and any stored data, 
 docker-compose down -v
 ```
 
+### 4. Set up the frontend
+
+If still in server directory, navigate to:
+
+```bash
+cd ../clientApp
+```
+
+Else if in project directory:
+
+```bash
+cd clientApp
+```
+
+Install expo dependencies:
+
+```bash
+npm install expo
+npx expo install
+```
+
 ## How to Run
 
 ### Backend
@@ -52,19 +74,7 @@ dotnet run
 
 ### Frontend
 
-Navigate to the directory:
-
-```bash
-cd clientApp
-```
-
-If running for the first time, install dependencies:
-
-```bash
-npx expo install
-```
-
-To run the frontend:
+To run the frontend, navigate clientApp directory and execute:
 
 ```bash
 npm start

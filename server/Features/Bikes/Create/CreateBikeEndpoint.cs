@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 using server.Models;
 
@@ -10,7 +11,8 @@ public class CreateBikeEndpoint : IEndpoint
         builder.MapPost("/api/bike/",
             async (ApplicationDbContext dbContext, CreateBikeRequest request) =>
             {
-                var bike = new Bike(){
+                var bike = new Bike()
+                {
                     SerialNumber = request.SerialNumber,
                     BikeStatus = request.BikeStatus,
                     CurrentStationId = request.CurrentStationId
@@ -18,5 +20,5 @@ public class CreateBikeEndpoint : IEndpoint
                 await dbContext.AddAsync(bike);
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(bike);
-            });
+            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
 }

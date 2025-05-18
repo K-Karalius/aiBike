@@ -11,7 +11,7 @@ public class GetAllReservationsEndpoint : IEndpoint
         builder.MapGet("/api/reservation/",
             async (ApplicationDbContext dbContext, [FromQuery] int page = 1, [FromQuery] int pageSize = 50) =>
             {
-                var result = await dbContext.Reservation.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+                var result = await dbContext.Reservations.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
                 return Results.Ok(result);
-            }).AllowAnonymous();
+            });
 }

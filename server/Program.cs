@@ -6,6 +6,7 @@ using server.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseUrls("http://0.0.0.0:5058");
 
 builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -24,17 +25,41 @@ builder.Services.AddHttpContextAccessor();
 builder.Services
     .AddDataSeeders()
     .AddDbContextWithIdentity(builder.Configuration)
-    .AddJwtOptions(builder.Configuration)
-    .AddJwtAuthentication()
-    .AddAuthorization()
+    .AddAuthenticationAndAuthorization(builder.Configuration)
     .AddCommandHandlers()
     .AddEndpointsRegistration()
     .AddEndpointsApiExplorer()
-    .AddSwaggerGen(c =>
+    .AddSwaggerGen(options =>
     {
-        c.SwaggerDoc("v1", new OpenApiInfo {
-            Title   = "aiBike API",
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "Your API",
             Version = "v1"
+        });
+        
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            Description = "Enter ‘Bearer’ [space] and then your valid JWT."
+        });
+
+        options.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                []
+            }
         });
     });
 
@@ -45,15 +70,12 @@ app.UseMiddleware<LoggingMiddleware>();
 
 await app.SeedDataAsync();
 
-app.RegisterEndpoints();    
+app.RegisterEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "aiBike v1");
-    });
+    app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "aiBike v1"); });
 }
 
 app.UseHttpsRedirection();

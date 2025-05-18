@@ -1,13 +1,17 @@
-﻿using System.Reflection;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Serilog;
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.Configuration;
 using server.DatabaseContext;
+using server.Models;
 
 namespace server.Extensions;
 
@@ -37,13 +41,20 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddJwtAuthentication(this IServiceCollection services)
+    public static IServiceCollection AddJwtAuthentication(
+        this IServiceCollection services
+    )
     {
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
-                var provider = services.BuildServiceProvider();
-                var settings = provider.GetRequiredService<Microsoft.Extensions.Options.IOptions<JwtSettings>>().Value;
+                var settings = services.BuildServiceProvider()
+                    .GetRequiredService<IOptions<JwtSettings>>().Value;
+
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -51,10 +62,15 @@ public static class ServiceCollectionExtensions
                     ValidateAudience = true,
                     ValidAudience = settings.Audience,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(settings.Secret)),
-                    ValidateLifetime = true
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(settings.Secret)
+                    ),
+                    ValidateLifetime = true,
+                    RoleClaimType = ClaimTypes.Role,
+                    NameClaimType = JwtRegisteredClaimNames.Sub
                 };
             });
+
         return services;
     }
 
@@ -88,6 +104,36 @@ public static class ServiceCollectionExtensions
         {
             services.AddSingleton(typeof(IEndpoint), type);
         }
+
+        return services;
+    }
+
+    public static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddJwtOptions(configuration);
+        services.AddJwtAuthentication();
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(
+                AuthorizationPolicies.UserOrAdmin,
+                policy => policy.RequireRole(
+                    Roles.User.ToString().ToUpperInvariant(),
+                    Roles.Admin.ToString().ToUpperInvariant()
+                )
+            );
+
+            options.AddPolicy(
+                AuthorizationPolicies.AdminOnly,
+                policy => policy.RequireRole(
+                    Roles.Admin.ToString().ToUpperInvariant()
+                )
+            );
+
+            var userOrAdmin = options.GetPolicy(AuthorizationPolicies.UserOrAdmin)!;
+            options.FallbackPolicy = userOrAdmin;
+        });
 
         return services;
     }

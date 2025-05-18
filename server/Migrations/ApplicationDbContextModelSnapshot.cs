@@ -238,7 +238,35 @@ namespace server.Migrations
 
                     b.HasIndex("CurrentStationId");
 
-                    b.ToTable("Bike");
+                    b.ToTable("Bikes");
+                });
+
+            modelBuilder.Entity("server.Models.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("Revoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("server.Models.Reservation", b =>
@@ -274,7 +302,7 @@ namespace server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reservation");
+                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("server.Models.Ride", b =>
@@ -321,7 +349,7 @@ namespace server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Ride");
+                    b.ToTable("Rides");
                 });
 
             modelBuilder.Entity("server.Models.Station", b =>
@@ -345,7 +373,7 @@ namespace server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Station");
+                    b.ToTable("Stations");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

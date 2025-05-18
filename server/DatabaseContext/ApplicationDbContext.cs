@@ -8,8 +8,15 @@ namespace server.DatabaseContext;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : IdentityDbContext<IdentityUser, IdentityRole, string>(options)
 {
-    public DbSet<Bike> Bike { get; set; }
-    public DbSet<Reservation> Reservation { get; set; }
-    public DbSet<Ride> Ride { get; set; }
-    public DbSet<Station> Station { get; set; }
+    public DbSet<Bike> Bikes { get; set; }
+    public DbSet<Reservation> Reservations { get; set; }
+    public DbSet<Ride> Rides { get; set; }
+    public DbSet<Station> Stations { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using server.Common.Abstractions;
+using server.Models;
 
 namespace server.Features.Auth.Register;
 
@@ -8,6 +9,7 @@ public class RegisterEndpoint : IEndpoint
         builder.MapPost("/api/auth/register",
             async (RegisterUserRequest request, ICommandHandler<RegisterUserRequest, string> handler) =>
             {
+                request = request with { Role = Roles.User };
                 var result = await handler.Handle(request);
                 return result.IsSuccess
                     ? Results.Ok(new { UserId = result.Value })

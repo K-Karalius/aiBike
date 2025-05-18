@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 
 namespace server.Features.Rides.Update;
@@ -22,5 +23,5 @@ public class UpdateRideEndpoint : IEndpoint
                 Ride.RideStatus = request.RideStatus;
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(Ride);
-            });
+            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
 }

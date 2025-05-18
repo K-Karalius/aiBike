@@ -19,8 +19,7 @@ public class RegisterUserCommandHandler(UserManager<IdentityUser> userManager)
             return Result<string>.Failure(errors);
         }
 
-        // For now, all users will be admin ig
-        await userManager.AddToRoleAsync(user, Roles.Admin.ToString());
+        await userManager.AddToRoleAsync(user, request.Role.ToString());
         return Result<string>.Success(user.Id);
     }
 }

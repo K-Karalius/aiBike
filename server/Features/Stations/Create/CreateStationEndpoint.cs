@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 using server.Models;
 
@@ -20,5 +21,5 @@ public class CreateStationEndpoint : IEndpoint
                 await dbContext.AddAsync(station);
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(station);
-            });
+            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
 }

@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 using server.Models;
 
@@ -22,5 +23,5 @@ public class CreateReservationEndpoint : IEndpoint
                 await dbContext.AddAsync(reservation);
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(reservation);
-            });
+            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
 }

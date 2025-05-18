@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 using server.Models;
 
@@ -23,5 +24,5 @@ public class CreateRideEndpoint : IEndpoint
                 await dbContext.AddAsync(Ride);
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(Ride);
-            });
+            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
 }

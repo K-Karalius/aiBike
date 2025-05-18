@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 
 namespace server.Features.Bikes.Update;
@@ -16,5 +17,5 @@ public class UpdateBikeEndpoint : IEndpoint
                 bike.CurrentStationId = request.CurrentStationId;
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(bike);
-            });
+            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
 }

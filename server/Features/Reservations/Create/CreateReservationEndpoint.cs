@@ -23,5 +23,5 @@ public class CreateReservationEndpoint : IEndpoint
                 await dbContext.AddAsync(reservation);
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(reservation);
-            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
+            });
 }

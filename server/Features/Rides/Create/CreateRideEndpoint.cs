@@ -24,5 +24,5 @@ public class CreateRideEndpoint : IEndpoint
                 await dbContext.AddAsync(Ride);
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(Ride);
-            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
+            });
 }

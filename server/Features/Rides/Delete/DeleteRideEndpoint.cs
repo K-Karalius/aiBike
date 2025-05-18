@@ -1,4 +1,5 @@
 using server.Common.Abstractions;
+using server.Common.Authorization;
 using server.DatabaseContext;
 
 namespace server.Features.Rides.Delete;
@@ -14,5 +15,5 @@ public class DeleteRideEndpoint : IEndpoint
                 dbContext.Remove(result);
                 await dbContext.SaveChangesAsync();
                 return Results.Ok();
-            });
+            }).RequireAuthorization(AuthorizationPolicies.AdminOnly);
 }

@@ -36,7 +36,7 @@ builder.Services
             Title = "Your API",
             Version = "v1"
         });
-
+        
         options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
             Name = "Authorization",

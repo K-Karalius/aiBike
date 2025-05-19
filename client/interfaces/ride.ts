@@ -1,38 +1,32 @@
-export enum RideStatus {
-  Started = 0,
-  Finished = 1,
-  Cancelled = 2,
-}
-
 export interface Ride {
   id: string;
   userId: string;
   bikeId: string;
-  startStationId: string | null;
-  endStationId: string | null;
-  startedAtUTC: string;
-  finishedAtUTC: string | null;
-  distanceMeters: number;
-  fareAmount: number;
+  startStationId: string;
+  endStationId?: string;
+  startedAtUTC: Date;
+  finishedAtUTC?: Date;
   rideStatus: RideStatus;
+  fareAmount: number;
+  distanceMeters: number;
+}
+
+export enum RideStatus {
+  Ongoing = 0,
+  Finished = 1,
+  Cancelled = 2,
 }
 
 export interface CreateRideRequest {
-  userId: string;
   bikeId: string;
-  startStationId: string | null;
-  rideStatus: RideStatus;
+  startStationId: string;
 }
 
-export interface UpdateRideRequest {
+export interface EndRideRequest {
   id: string;
-  userId: string;
-  bikeId: string | null;
-  startStationId: string | null;
-  endStationId: string | null;
-  startedAtUTC: string | null;
-  finishedAtUTC: string | null;
-  distanceMeters: number;
-  fareAmount: number;
-  rideStatus: RideStatus;
+}
+
+export interface EndRideResponse {
+  totalDurationMinutes: number;
+  fare: number;
 }

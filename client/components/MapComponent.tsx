@@ -1,79 +1,76 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
-import MapView, { Region } from 'react-native-maps';
+import MapView, { Region, Details, PROVIDER_GOOGLE } from 'react-native-maps';
 import { GetStationRange } from '@/interfaces/station';
 import { getStationsInRangeService } from '@/services/station';
 import CustomMarker from './CustomMarker';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const MAP_DELTA: number = 0.01;
-const WAIT_TIMER_IN_SECONDS: number = 1;
 
-export default function Map() {
-  const [location, setLocation] = useState<Region | undefined>(undefined);
+export default function MapComponent() {
+  const [location, setLocation] = useState<Region>({
+    latitude: 0, // Default coordinates
+    longitude: 0,
+    latitudeDelta: MAP_DELTA,
+    longitudeDelta: MAP_DELTA,
+  });
   const [stations, setStations] = useState<GetStationRange[]>([]);
-  const [isLoaded, setLoaded] = useState<boolean>(false);
   const timeoutRef = useRef<number>(0);
-  const insets = useSafeAreaInsets();
+  const mapRef = useRef<MapView>(null);
 
   useEffect(() => {
     const getLocation = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         alert('Permission to access location was denied');
-        setLocation(undefined);
         return;
       }
 
       const userLocation = await Location.getCurrentPositionAsync({});
-      setLocation({
+      const region = {
         latitude: userLocation.coords.latitude,
         longitude: userLocation.coords.longitude,
         latitudeDelta: MAP_DELTA,
         longitudeDelta: MAP_DELTA,
-      });
+      };
+      setLocation(region);
+      mapRef.current?.animateToRegion(region);
+      getStations(region);
     };
 
-    if (location === undefined) {
-      getLocation();
-      getStations();
-    }
+    getLocation();
+  }, []);
 
-    setLoaded(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoaded]);
-
-  const getStations = async () => {
-    const response = await getStationsInRangeService(location);
+  const getStations = async (region: Region) => {
+    const response = await getStationsInRangeService(region);
     setStations(response);
   };
 
-  const updateMapStations = async (region: Region) => {
+  const updateMapStations = (region: Region, details: Details) => {
+    // Use the correct Details type
     setLocation(region);
+
+    // Handle potential undefined value with optional chaining
+    if (!details?.isGesture) return;
+
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
-    timeoutRef.current = setTimeout(async () => {
-      getStations();
-      setLoaded(false);
-    }, WAIT_TIMER_IN_SECONDS * 1000);
+    timeoutRef.current = setTimeout(() => {
+      getStations(region);
+    }, 1000);
   };
 
   return (
     <MapView
+      ref={mapRef}
       style={{ flex: 1 }}
-      customMapStyle={customMapStyle}
+      provider={PROVIDER_GOOGLE}
       initialRegion={location}
-      showsUserLocation={true}
       onRegionChangeComplete={updateMapStations}
-      showsCompass={false}
-      mapPadding={{
-        top: insets.top,
-        bottom: insets.bottom,
-        left: insets.left,
-        right: insets.right,
-      }}
+      customMapStyle={customMapStyle}
+      showsUserLocation
     >
-      {stations.map((station: GetStationRange, index) => (
+      {stations.map((station, index) => (
         <CustomMarker station={station} onPressMarker={() => {}} key={index} />
       ))}
     </MapView>

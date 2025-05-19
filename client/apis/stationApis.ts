@@ -14,7 +14,7 @@ export const createStation = async (
   return response.data;
 };
 
-export const getStation = async (id: number): Promise<Station> => {
+export const getStation = async (id: string): Promise<Station> => {
   const response = await api.get(`/station/${id}`);
   return response.data;
 };

@@ -7,7 +7,7 @@ import CustomMarker from './CustomMarker';
 
 const MAP_DELTA: number = 0.01;
 
-export default function Map() {
+export default function MapComponent() {
   const [location, setLocation] = useState<Region>({
     latitude: 0, // Default coordinates
     longitude: 0,

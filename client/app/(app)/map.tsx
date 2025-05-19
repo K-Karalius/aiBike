@@ -1,15 +1,20 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Map from '@/components/Map';
+import MapComponent from '@/components/MapComponent';
 import UserOnly from '@/components/auth/UserOnly';
+import ActiveRideInfo from '@/components/ActiveRideInfo';
+import { useRide } from '@/contexts/RideContext';
 
 export default function MapScreen() {
+  const { activeRide } = useRide();
+
   return (
     <UserOnly>
       <View style={styles.container}>
         <View style={styles.mapContainer}>
-          <Map />
+          <MapComponent />
         </View>
+        {activeRide && <ActiveRideInfo />}
       </View>
     </UserOnly>
   );

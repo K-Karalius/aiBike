@@ -1,3 +1,4 @@
+import { RideProvider } from '@/contexts/RideContext';
 import { UserProvider } from '@/contexts/UserContext';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -13,23 +14,25 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <UserProvider>
-        <>
-          <View style={{ height: insets.top, backgroundColor: '#000' }} />
-          <StatusBar style="light" />
+        <RideProvider>
+          <>
+            <View style={{ height: insets.top, backgroundColor: '#000' }} />
+            <StatusBar style="light" />
 
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: {
-                paddingTop: 0,
-              },
-            }}
-          >
-            <Stack.Screen name="(app)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="index" />
-          </Stack>
-        </>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: {
+                  paddingTop: 0,
+                },
+              }}
+            >
+              <Stack.Screen name="(app)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="index" />
+            </Stack>
+          </>
+        </RideProvider>
       </UserProvider>
     </SafeAreaProvider>
   );

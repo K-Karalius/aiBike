@@ -86,12 +86,11 @@ export default function BikeInfo({ scannedBike, startScan }: BikeInfoProps) {
       Alert.alert('Error', 'This bike is not available to start a ride.');
       return;
     }
-    // startRideAttempt will show its own alerts for success/failure
+
     await startRideAttempt(scannedBike.id, scannedBike.currentStationId);
   };
 
   const handleEndRide = async () => {
-    // endRideAttempt will show its own alerts
     await endRideAttempt();
   };
 
@@ -129,8 +128,7 @@ export default function BikeInfo({ scannedBike, startScan }: BikeInfoProps) {
 
         <View style={styles.bikeInfoRow}>
           <Text style={styles.bikeInfoLabel}>Price:</Text>
-          <Text style={styles.bikeInfoValue}>0.22 €/min</Text>{' '}
-          {/* Placeholder */}
+          <Text style={styles.bikeInfoValue}>0.22 €/min</Text>
         </View>
 
         {stationName && (
@@ -141,7 +139,6 @@ export default function BikeInfo({ scannedBike, startScan }: BikeInfoProps) {
         )}
       </View>
 
-      {/* Conditional Ride Buttons */}
       {!activeRide && scannedBike.bikeStatus === BikeStatus.Available && (
         <TouchableOpacity
           style={[styles.actionButton, styles.startRideButton]}

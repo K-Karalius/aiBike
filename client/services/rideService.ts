@@ -1,6 +1,6 @@
 // services/rideService.ts
 import * as Location from 'expo-location';
-import { getBike } from '@/apis/bikeApis';
+import { getBike, updateBike } from '@/apis/bikeApis';
 import {
   startRide as startRideApi,
   endRide as endRideApi,
@@ -252,21 +252,22 @@ export async function fetchUserCurrentRide(): Promise<Ride | null> {
 }
 
 /**
- * Placeholder for API call to update ride location periodically.
- * The actual API endpoint (/api/ride/${rideId}/location) needs to exist on the backend.
- * @param rideId The ID of the active ride.
+ * Sends the bike's updated location to the backend.
+ * This effectively updates the ride's distance on the backend.
+ * @param bikeId The ID of the active bike for the ride.
  * @param data The location data.
- * @returns A promise that resolves to the updated Ride object.
+ * @returns A promise that resolves to the updated Bike object.
  */
-// export async function sendRideLocationUpdate(rideId: string, data: UpdateRideLocationRequest): Promise<Ride> {
-//   console.log(`Updating location for ride ${rideId}:`, data);
-//   // This is a placeholder. Uncomment and adjust when backend endpoint is ready.
-//   // import api from '@/apis/api'; // Ensure api is imported if used here
-//   // const response = await api.patch(`/api/ride/${rideId}/location`, data);
-//   // return response.data;
-//   // For now, returning a resolved promise with a partial ride like structure
-//   return Promise.resolve({ id: rideId, ...data } as unknown as Ride);
-// }
+export async function sendBikeLocationUpdate(
+  bikeId: string,
+  data: UpdateRideLocationRequest,
+): Promise<Bike> {
+  console.log(`Updating location for bike ${bikeId}:`, data);
+  // This sends a PATCH request to the /api/bike/ endpoint to update the bike's location.
+  // The backend's UpdateBikeEndpoint.cs will then update the associated ride's distance.
+  const response = await updateBike({ id: bikeId, ...data });
+  return response;
+}
 
 // --- Periodic Update Management (Conceptual: actual timer will be in context) ---
 // This is just to note the service function that would be called.
@@ -274,13 +275,26 @@ export async function handlePeriodicLocationUpdate(
   rideId: string,
 ): Promise<void> {
   try {
+    const currentRide = await fetchRideDetails(rideId);
+    if (!currentRide || !currentRide.bikeId) {
+      console.warn(
+        `Could not find active ride or bike ID for ride ${rideId}. Skipping location update.`,
+      );
+      return;
+    }
+
     const userCoords = await getCurrentUserLocation();
     const locationData: UpdateRideLocationRequest = {
       latitude: userCoords.latitude,
       longitude: userCoords.longitude,
     };
-    // await sendRideLocationUpdate(rideId, locationData); // Uncomment when API is ready
-    console.log('Periodic location update for ride:', rideId, locationData);
+    // Call the function to send bike location updates
+    await sendBikeLocationUpdate(currentRide.bikeId, locationData);
+    console.log(
+      'Periodic location update for ride (via bike update):',
+      rideId,
+      locationData,
+    );
   } catch (error) {
     console.error('Error during periodic location update:', error);
   }

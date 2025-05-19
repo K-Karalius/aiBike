@@ -12,12 +12,11 @@ public class UpdateReservationEndpoint : IEndpoint
             {
                 var reservation = dbContext.Reservations.Find(request.Id);
                 if (reservation == null) return Results.NotFound("Reservation not found");
-                reservation.UserId = request.UserId;
-                reservation.BikeId = request.BikeId;
-                reservation.StationId = request.StationId;
-                reservation.ReservedAtUTC = request.ReservedAtUTC;
-                reservation.ExpiresAtUTC = request.ExpiresAtUTC;
-                reservation.ReservationStatus = request.ReservationStatus;
+                if (request.BikeId != null) reservation.BikeId = request.BikeId;
+                if (request.StationId != null) reservation.StationId = request.StationId;
+                if (request.ReservedAtUTC != null) reservation.ReservedAtUTC = (DateTime) request.ReservedAtUTC;
+                if (request.ExpiresAtUTC != null) reservation.ExpiresAtUTC = (DateTime) request.ExpiresAtUTC;
+                if (request.ReservationStatus != null) reservation.ReservationStatus = (Models.ReservationStatus) request.ReservationStatus;
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(reservation);
             }).RequireAuthorization(AuthorizationPolicies.AdminOnly);

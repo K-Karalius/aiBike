@@ -36,7 +36,7 @@ public class StartRideEndpoint : IEndpoint
                 var station = dbContext.Stations.AsEnumerable().FirstOrDefault(s => (decimal)GeoCalculator.GetDistance((double)s.Latitude, (double)s.Longitude, (double)bike.Latitude, (double)bike.Longitude, 2, DistanceUnit.Meters) <= GetBusinessConstants.stationRadius);
                 if (station == null)
                     return Results.UnprocessableEntity("The bike is not in a station");
-                    
+
                 bike.CurrentStationId = station.Id;
                 bike.BikeStatus = BikeStatus.Available;
                 ride.RideStatus = RideStatus.Finished;

@@ -41,6 +41,7 @@ public class StartRideEndpoint : IEndpoint
                 bike.BikeStatus = BikeStatus.Available;
                 ride.RideStatus = RideStatus.Finished;
                 ride.FinishedAtUTC = DateTime.UtcNow;
+                ride.EndStationId = station.Id;
                 TimeSpan time = (TimeSpan) (ride.FinishedAtUTC - ride.StartedAtUTC);
                 ride.FareAmount = (decimal) time.TotalMinutes * GetBusinessConstants.farePerMinute;
                 await dbContext.SaveChangesAsync();

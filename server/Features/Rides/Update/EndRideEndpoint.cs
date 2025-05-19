@@ -1,17 +1,17 @@
 using Geolocation;
+using Microsoft.EntityFrameworkCore;
 using server.Common.Abstractions;
 using server.DatabaseContext;
 using server.Features.BusinessConstants.Get;
-using server.Features.Rides.Update;
 using server.Models;
 
-namespace server.Features.Bikes.Update;
+namespace server.Features.Rides.Update;
 
 public class StartRideEndpoint : IEndpoint
 {
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder) =>
         builder.MapPatch("/api/ride/end",
-            async (ApplicationDbContext dbContext, UpdateBikeRequest request) =>
+            async (ApplicationDbContext dbContext, EndRideRequest request) =>
             {
                 var ride = dbContext.Rides.Find(request.Id);
                 if(ride == null) return Results.NotFound("Ride not found");
@@ -19,8 +19,9 @@ public class StartRideEndpoint : IEndpoint
                 if(ride.StartedAtUTC == null) return Results.UnprocessableEntity("Ride does not have a start date");
                 var bike = dbContext.Bikes.FirstOrDefault(b => b.Id == ride.BikeId);
                 if(bike == null) return Results.UnprocessableEntity("Invalid bike");
-                var station = dbContext.Stations.FirstOrDefault(s => (decimal) GeoCalculator.GetDistance((double) s.Latitude, (double) s.Longitude, (double) bike.Latitude, (double) bike.Longitude, 2, DistanceUnit.Meters) <= GetBusinessConstants.stationRadius);
-                if (station == null) return Results.UnprocessableEntity("The bike is not in a station");
+                var station = dbContext.Stations.Include(s => s.Bikes).FirstOrDefault(s => (decimal) GeoCalculator.GetDistance((double) s.Latitude, (double) s.Longitude, (double) bike.Latitude, (double) bike.Longitude, 2, DistanceUnit.Meters) <= GetBusinessConstants.stationRadius);
+                if(station == null) return Results.UnprocessableEntity("The bike is not in a station");
+                if(station.Bikes.Count >= station.Capacity) return Results.UnprocessableEntity("The station is full");
                 bike.CurrentStationId = station.Id;
                 bike.BikeStatus = BikeStatus.Available;
                 ride.RideStatus = RideStatus.Finished;

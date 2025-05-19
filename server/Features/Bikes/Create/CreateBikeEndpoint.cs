@@ -15,6 +15,8 @@ public class CreateBikeEndpoint : IEndpoint
                 {
                     SerialNumber = request.SerialNumber,
                     BikeStatus = request.BikeStatus,
+                    Latitude = request.Latitude,
+                    Longitude = request.Longitude,
                     CurrentStationId = request.CurrentStationId
                 };
                 await dbContext.AddAsync(bike);

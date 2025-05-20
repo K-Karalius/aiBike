@@ -1,98 +1,81 @@
+using server.Common.Authorization;
+using server.Extensions;
+
 namespace server.Features.Stations.GetAll;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Common.Authorization;
+using Common.Abstractions;
 using DatabaseContext;
-using server.Common.Abstractions;
-
 
 public class GetAllStationsEndpoint : IEndpoint
 {
     private const double EarthRadiusKm = 6371.0;
-    private const double ToRadians = Math.PI / 180.0;
+    private const double ToRadians     = Math.PI / 180.0;
 
-    public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder)
-        => builder.MapGet("/api/station", HandleGetAllStations)
-            .RequireAuthorization(AuthorizationPolicies.UserOrAdmin);
-    private async Task<IResult> HandleGetAllStations(
+    public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder) =>
+        builder.MapGet("/api/station", HandleGetAllStations)
+               .RequireAuthorization(AuthorizationPolicies.UserOrAdmin);
+
+    private static async Task<IResult> HandleGetAllStations(
         ApplicationDbContext dbContext,
         [FromQuery] decimal latitude,
         [FromQuery] decimal longitude,
         [FromQuery] decimal radiusKm,
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 50)
+        [FromQuery] int pageSize = 50,
+        CancellationToken cancellationToken = default)
     {
-        var latDegrees = (double)latitude;
-        var lonDegrees = (double)longitude;
-        var radius = (double)radiusKm;
+        var userLat  = (double)latitude;
+        var userLon  = (double)longitude;
+        var radius   = (double)radiusKm;
 
+        // First cull by a cheap lat/lon bounding box
         var latDelta = (radius / EarthRadiusKm) * (180.0 / Math.PI);
-        var lonDelta = (radius / EarthRadiusKm)
-                       * (180.0 / Math.PI)
-                       / Math.Cos(latDegrees * ToRadians);
+        var lonDelta = latDelta / Math.Cos(userLat * ToRadians);
 
-        var minLat = latDegrees - latDelta;
-        var maxLat = latDegrees + latDelta;
-        var minLon = lonDegrees - lonDelta;
-        var maxLon = lonDegrees + lonDelta;
+        var minLat = (decimal)(userLat - latDelta);
+        var maxLat = (decimal)(userLat + latDelta);
+        var minLon = (decimal)(userLon - lonDelta);
+        var maxLon = (decimal)(userLon + lonDelta);
 
-        var candidates = await dbContext.Stations
+        var stationsQuery = dbContext.Stations
             .AsNoTracking()
             .Where(s =>
-                s.Latitude  >= (decimal)minLat &&
-                s.Latitude  <= (decimal)maxLat &&
-                s.Longitude >= (decimal)minLon &&
-                s.Longitude <= (decimal)maxLon)
-            .Include(s => s.Bikes)
-            .ToListAsync();
+                s.Latitude  >= minLat &&
+                s.Latitude  <= maxLat &&
+                s.Longitude >= minLon &&
+                s.Longitude <= maxLon)
+            .Select(s => new
+            {
+                Station   = s,
+                Distance  = EarthRadiusKm
+                    * 2.0
+                    * Math.Asin(
+                        Math.Min(1.0, Math.Sqrt(
+                            Math.Pow(Math.Sin(((double)s.Latitude - userLat) * ToRadians / 2.0), 2.0)
+                          + Math.Cos(userLat * ToRadians)
+                          * Math.Cos((double)s.Latitude * ToRadians)
+                          * Math.Pow(Math.Sin(((double)s.Longitude - userLon) * ToRadians / 2.0), 2.0)
+                        ))
+                    ),
+                BikeCount = s.Bikes.Count
+            })
+            .Where(x => x.Distance <= radius)
+            .OrderBy(x => x.Station.Name)
+            .Select(x => new GetAllStationsResponse
+            {
+                Id        = x.Station.Id,
+                Name      = x.Station.Name,
+                Latitude  = x.Station.Latitude,
+                Longitude = x.Station.Longitude,
+                Capacity  = x.Station.Capacity,
+                BikeCount = x.BikeCount
+            });
 
-        var nearbyPaged = candidates
-            .Where(s =>
-                CalculateDistanceInKilometers(
-                    latDegrees,
-                    lonDegrees,
-                    (double)s.Latitude,
-                    (double)s.Longitude) <= radius)
-            .OrderBy(s => s.Name)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(s => new GetAllStationsResponse
-          {
-              Id        = s.Id,
-              Name      = s.Name,
-              Latitude  = s.Latitude,
-              Longitude = s.Longitude,
-              Capacity  = s.Capacity,
-              BikeCount = s.Bikes.Count
-          })
-            .ToList();
+        var pagedResult =
+            await stationsQuery.ToPagedResultAsync(page, pageSize, cancellationToken);
 
-        return Results.Ok(nearbyPaged);
-    }
-
-    private double CalculateDistanceInKilometers(
-        double userLatDeg,
-        double userLonDeg,
-        double stationLatDeg,
-        double stationLonDeg)
-    {
-        var userLatRad    = userLatDeg    * ToRadians;
-        var userLonRad    = userLonDeg    * ToRadians;
-        var stationLatRad = stationLatDeg * ToRadians;
-        var stationLonRad = stationLonDeg * ToRadians;
-
-        var dLat = stationLatRad - userLatRad;
-        var dLon = stationLonRad - userLonRad;
-        var sinLat2 = Math.Sin(dLat / 2.0);
-        var sinLon2 = Math.Sin(dLon / 2.0);
-
-        var a = sinLat2 * sinLat2
-              + Math.Cos(userLatRad)
-              * Math.Cos(stationLatRad)
-              * sinLon2 * sinLon2;
-
-        var c = 2.0 * Math.Asin(Math.Min(1.0, Math.Sqrt(a)));
-        return EarthRadiusKm * c;
+        return Results.Ok(pagedResult);
     }
 }

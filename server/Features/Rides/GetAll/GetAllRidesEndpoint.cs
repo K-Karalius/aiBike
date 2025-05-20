@@ -19,9 +19,7 @@ public class GetAllRidesEndpoint : IEndpoint
                 {
                     var allRides = await dbContext.Rides
                         .OrderByDescending(r => r.StartedAtUTC)
-                        .Skip((page - 1) * pageSize)
-                        .Take(pageSize)
-                        .ToListAsync(cancellationToken);
+                        .ToPagedResultAsync(page, pageSize, cancellationToken);
                         
                     return Results.Ok(allRides);
                 }

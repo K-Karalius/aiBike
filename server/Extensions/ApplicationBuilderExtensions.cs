@@ -4,13 +4,16 @@ namespace server.Extensions;
 
 public static class ApplicationBuilderExtensions
 {
-    public static void RegisterEndpoints(this WebApplication app)
+    public static WebApplication RegisterEndpoints(this WebApplication app)
     {
-        var endpoints = app.Services.GetRequiredService<IEnumerable<IEndpoint>>();
+        using var scope = app.Services.CreateScope();
+        var endpoints = scope.ServiceProvider.GetRequiredService<IEnumerable<IEndpoint>>();
         foreach (var endpoint in endpoints)
         {
             var route = endpoint.MapEndpoint(app);
             route.WithOpenApi();
         }
+
+        return app;
     }
 }

@@ -107,7 +107,7 @@ public static class ServiceCollectionExtensions
 
         foreach (var type in endpointTypes)
         {
-            services.AddSingleton(typeof(IEndpoint), type);
+            services.AddScoped(typeof(IEndpoint), type);
         }
 
         return services;

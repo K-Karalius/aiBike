@@ -7,9 +7,9 @@ public static class DataSeederExtensions
 {
     public static IServiceCollection AddDataSeeders(this IServiceCollection services)
     {
-        services.AddSingleton<ISeeder>(_ =>
+        services.AddScoped<ISeeder>(_ =>
             new RoleSeeder(["ADMIN", "USER"]));
-        services.AddSingleton<ISeeder>(_ =>
+        services.AddScoped<ISeeder>(_ =>
             new UserSeeder("admin@aibike.com", "AdminP@ssw0rd", ["ADMIN"]));
         return services;
     }

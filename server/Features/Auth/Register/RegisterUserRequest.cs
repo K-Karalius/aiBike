@@ -11,7 +11,7 @@ public record RegisterUserRequest
     public required string Email { get; init; }
     [Required]
     public required string Password { get; init; }
-
+    
     [BindNever]
     [JsonIgnore]
     public Roles Role { get; init; } = Roles.User;

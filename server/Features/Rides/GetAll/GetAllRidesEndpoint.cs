@@ -10,7 +10,7 @@ public class GetAllRidesEndpoint : IEndpoint
 {
     public RouteHandlerBuilder MapEndpoint(IEndpointRouteBuilder builder) =>
         builder.MapGet("/api/ride/",
-            async (HttpContext httpContext, ApplicationDbContext dbContext, [FromQuery] int page = 1, [FromQuery] int pageSize = 50) =>
+            async (HttpContext httpContext, ApplicationDbContext dbContext, CancellationToken cancellationToken, [FromQuery] int page = 1, [FromQuery] int pageSize = 50) =>
             {
                 var userId = httpContext.GetCurrentUserId();
                 if (userId == null) return Results.Unauthorized();
@@ -21,7 +21,7 @@ public class GetAllRidesEndpoint : IEndpoint
                         .OrderByDescending(r => r.StartedAtUTC)
                         .Skip((page - 1) * pageSize)
                         .Take(pageSize)
-                        .ToListAsync();
+                        .ToListAsync(cancellationToken);
                         
                     return Results.Ok(allRides);
                 }
@@ -29,9 +29,7 @@ public class GetAllRidesEndpoint : IEndpoint
                 var userRides = await dbContext.Rides
                     .Where(r => r.UserId == userId)
                     .OrderByDescending(r => r.StartedAtUTC)
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
-                    .ToListAsync();
+                    .ToPagedResultAsync(page, pageSize, cancellationToken);
 
                 return Results.Ok(userRides);
             });

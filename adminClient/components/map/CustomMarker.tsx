@@ -1,10 +1,10 @@
-import { GetStationRange } from '@/interfaces/station';
+import { Station } from '@/interfaces/station';
 import { StyleSheet, Image, Text, View } from 'react-native';
 import { Marker } from 'react-native-maps';
 
 interface Props {
-  station: GetStationRange;
-  onPressMarker?: (station: GetStationRange) => void;
+  station: Station;
+  onPressMarker?: (station: Station) => void;
 }
 
 export default function CustomMarker({ station, onPressMarker }: Props) {

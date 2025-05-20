@@ -15,11 +15,7 @@ import {
   Ride,
   RideStatus,
 } from '@/interfaces/ride';
-import {
-  Station,
-  GetStationsRequest,
-  GetStationRange,
-} from '@/interfaces/station';
+import { Station, GetStationsRequest } from '@/interfaces/station';
 
 // --- Configuration ---
 const PROXIMITY_THRESHOLD_METERS = 100; // 100 meters proximity threshold
@@ -133,13 +129,13 @@ async function checkProximityToBikeAndStation(
 async function checkProximityToAStation(
   userCoords: Location.LocationObjectCoords,
   radiusKm: number = 1, // Search within 1 km radius
-): Promise<GetStationRange> {
+): Promise<Station> {
   const stationRequest: GetStationsRequest = {
     latitude: userCoords.latitude,
     longitude: userCoords.longitude,
     radiusKm: radiusKm,
   };
-  const nearbyStations = await getStationsInRange(stationRequest);
+  const nearbyStations = (await getStationsInRange(stationRequest)).items;
 
   if (!nearbyStations || nearbyStations.length === 0) {
     throw new Error(
@@ -147,7 +143,7 @@ async function checkProximityToAStation(
     );
   }
 
-  let closestStation: GetStationRange | null = null;
+  let closestStation: Station | null = null;
   let minDistance = Infinity;
 
   for (const station of nearbyStations) {

@@ -98,7 +98,7 @@ export default function ScanScreen() {
       return (
         <View style={styles.startScanContainer}>
           <Text style={styles.instructionText}>
-            Scan a bike QR code to start your ride
+            Scan a bike QR to add to station
           </Text>
           <TouchableOpacity style={styles.scanButton} onPress={startScan}>
             <Ionicons name="scan-outline" size={40} color="white" />

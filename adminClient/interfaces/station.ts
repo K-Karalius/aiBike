@@ -6,16 +6,17 @@ export interface Station {
   capacity: number;
   latitude: number;
   longitude: number;
+  bikeCount?: number;
   bikes?: Bike[];
 }
 
-export interface GetStationRange {
-  id: string;
-  name: string;
-  capacity: number;
-  latitude: number;
-  longitude: number;
-  bikeCount: number;
+export interface GetStationRangeResponse {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  items: Station[];
 }
 
 export interface CreateStationRequest {

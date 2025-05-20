@@ -8,8 +8,11 @@ import CreateStationPopup, {
   PopupHandle,
 } from '@/components/map/CreateStationPopup';
 import { createStation } from '@/apis/stationApis';
-import { GetStationRange } from '@/interfaces/station';
+import { Station } from '@/interfaces/station';
 import ManageStationPopup from '@/components/map/ManageStationPopup';
+import AddBikeToStationPopup from '@/components/map/AddBikeToStationPopup';
+import { router } from 'expo-router';
+import BikeQR from '@/components/bike/BikeQR';
 
 export default function MapScreen() {
   const [manageStations, setManageStations] = useState<boolean>(false);
@@ -17,7 +20,8 @@ export default function MapScreen() {
   const createPopupRef = useRef<PopupHandle>(null);
   const [marker, setMarker] = React.useState<LatLng | null>(null);
   const [createPopupOpen, setCreatePopupOpen] = useState(false);
-  const [openStation, setOpenStation] = useState<GetStationRange | null>(null);
+  const [openStation, setOpenStation] = useState<Station | null>(null);
+  const [openQR, setOpenQR] = useState('');
 
   const handleManageTap = async (e: MapPressEvent) => {
     if (!manageStations) return;
@@ -44,13 +48,16 @@ export default function MapScreen() {
     createPopupRef.current?.resetFields();
   };
 
-  const handleMarkerPress = (station: GetStationRange) => {
-    if (!manageStations) return;
-
-    if (openStation == null) setOpenStation(station);
-    else setOpenStation(null);
+  const handleMarkerPress = (station: Station) => {
+    if (openStation === station) setOpenStation(null);
+    else setOpenStation(station);
 
     cancelSelection();
+  };
+
+  const handleCircleButtonPress = () => {
+    setOpenStation(null);
+    setManageStations(true);
   };
 
   const submitButton = async () => {
@@ -68,6 +75,12 @@ export default function MapScreen() {
     } catch (err) {
       if (err instanceof Error) Alert.alert(err.message);
     }
+  };
+
+  const onAddBike = () => {
+    if (openStation)
+      router.navigate(`/bike_station?stationId=${openStation.id}`);
+    setOpenStation(null);
   };
 
   return (
@@ -99,10 +112,17 @@ export default function MapScreen() {
           ) : (
             <TouchableOpacity
               style={styles.circleButton}
-              onPress={() => setManageStations(true)}
+              onPress={handleCircleButtonPress}
             >
               <Ionicons name="add" size={24} color="white" />
             </TouchableOpacity>
+          )}
+          {openStation && !manageStations && (
+            <AddBikeToStationPopup
+              onCancel={() => setOpenStation(null)}
+              onAccept={onAddBike}
+              stationName={openStation.name}
+            />
           )}
         </View>
       </View>
@@ -113,22 +133,22 @@ export default function MapScreen() {
           onClose={cancelSelection}
         />
       )}
-      {openStation != null && (
+      {openStation && manageStations && (
         <ManageStationPopup
           onClose={() => setOpenStation(null)}
           station={openStation}
+          onQR={() => {
+            setOpenQR(openStation.id);
+            setOpenStation(null);
+          }}
         />
       )}
+      {openQR && <BikeQR onClose={() => setOpenQR('')} stationId={openQR} />}
     </UserOnly>
   );
 }
 
 const styles = StyleSheet.create({
-  container_gest: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   box: {
     position: 'absolute',
     top: '10%',

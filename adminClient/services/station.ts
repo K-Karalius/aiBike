@@ -1,6 +1,7 @@
 import { getStationsInRange, patchStation } from '@/apis/stationApis';
+import { SuccessDecorator } from '@/interfaces/decorator';
 import {
-  GetStationRange,
+  GetStationRangeResponse,
   GetStationsRequest,
   PatchStationRequest,
 } from '@/interfaces/station';
@@ -10,7 +11,7 @@ const DEG_TO_KM = 111.32;
 
 export const getStationsInRangeService = async (
   region: Region | undefined,
-): Promise<GetStationRange[]> => {
+): Promise<SuccessDecorator<GetStationRangeResponse>> => {
   const request: GetStationsRequest = {
     latitude: region?.latitude ?? 0,
     longitude: region?.longitude ?? 0,

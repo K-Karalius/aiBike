@@ -23,6 +23,7 @@ builder.Services.Configure<LoggingInterceptorOptions>(
 builder.Services.AddHttpContextAccessor();
 
 builder.Services
+    .AddMemoryCache()
     .AddDataSeeders()
     .AddDbContextWithIdentity(builder.Configuration)
     .AddAuthenticationAndAuthorization(builder.Configuration)

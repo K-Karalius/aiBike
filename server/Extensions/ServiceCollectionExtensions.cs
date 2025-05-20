@@ -12,6 +12,7 @@ using server.Common.Authorization;
 using server.Configuration;
 using server.DatabaseContext;
 using server.Models;
+using Scrutor;
 
 namespace server.Extensions;
 
@@ -74,21 +75,25 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddCommandHandlers(this IServiceCollection services)
+    public static IServiceCollection AddCommandHandlersWithCaching(
+        this IServiceCollection services,
+        IConfiguration configuration)
     {
-        var handlerType = typeof(ICommandHandler<,>);
-        var handlers = Assembly.GetExecutingAssembly()
-            .GetTypes()
-            .Where(t => t.GetInterfaces()
-                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == handlerType))
-            .ToList();
+        services.AddMemoryCache();
+        services.Configure<HandlerCacheSettingsOptions>(configuration);
 
-        foreach (var implementation in handlers)
-        {
-            var serviceInterface = implementation.GetInterfaces()
-                .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == handlerType);
-            services.AddScoped(serviceInterface, implementation);
-        }
+        services.Scan(scan => scan
+            .FromEntryAssembly()
+            .AddClasses(classes =>
+                classes.AssignableTo(typeof(ICommandHandler<,>)))
+            .AsImplementedInterfaces()
+            .WithScopedLifetime()
+        );
+
+        services.Decorate(
+            typeof(ICommandHandler<,>),
+            typeof(CachingCommandHandlerDecorator<,>)
+        );
 
         return services;
     }

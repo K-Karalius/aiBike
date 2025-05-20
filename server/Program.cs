@@ -26,7 +26,7 @@ builder.Services
     .AddDataSeeders()
     .AddDbContextWithIdentity(builder.Configuration)
     .AddAuthenticationAndAuthorization(builder.Configuration)
-    .AddCommandHandlers()
+    .AddCommandHandlersWithCaching(builder.Configuration)
     .AddEndpointsRegistration()
     .AddEndpointsApiExplorer()
     .AddSwaggerGen(options =>
@@ -36,7 +36,7 @@ builder.Services
             Title = "Your API",
             Version = "v1"
         });
-        
+
         options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
             Name = "Authorization",

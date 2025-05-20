@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { UserContext } from '@/contexts/UserContext';
-import { TouchableOpacity } from 'react-native';
+import { Image, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AppLayout() {
@@ -52,11 +52,14 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="bikes"
         options={{
-          title: 'Profile',
+          title: 'Unused bikes',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <Image
+              source={require('../../assets/images/bike-icon.png')}
+              style={{ width: size, height: size, tintColor: color }}
+            />
           ),
         }}
       />

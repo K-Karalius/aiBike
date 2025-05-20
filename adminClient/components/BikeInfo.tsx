@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Bike, BikeStatus } from '@/interfaces/bike';
 import { useStationName } from '@/hooks/useStationName';
+import { router } from 'expo-router';
 
 interface BikeInfoProps {
   scannedBike: Bike;
@@ -84,18 +85,15 @@ export default function BikeInfo({ scannedBike, startScan }: BikeInfoProps) {
         <TouchableOpacity
           style={styles.startRideButton}
           onPress={() =>
-            Alert.alert(
-              'Starting Ride',
-              'Ride started with bike ' + scannedBike.id,
-            )
+            router.navigate(`/bike_station?bikeId=${scannedBike.id}`)
           }
         >
-          <Text style={styles.startRideButtonText}>Start Ride</Text>
+          <Text style={styles.startRideButtonText}>Add to station</Text>
         </TouchableOpacity>
       )}
 
       <TouchableOpacity style={styles.scanAgainButton} onPress={startScan}>
-        <Text style={styles.scanAgainButtonText}>Scan Another Bike</Text>
+        <Text style={styles.scanAgainButtonText}>Cancel</Text>
       </TouchableOpacity>
     </View>
   );

@@ -40,7 +40,7 @@ const LoginScreen = () => {
         source={require('../../assets/images/bike-icon.png')}
         style={styles.logo}
       />
-      <Text style={styles.title}>{"aiBike"}</Text>
+      <Text style={styles.title}>{'aiBike'}</Text>
       <Text style={styles.header}>Admin log in</Text>
       <TextInput
         value={email}

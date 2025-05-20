@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import { CreateStationRequest } from '@/interfaces/station';
 import { forwardRef, useImperativeHandle, useState } from 'react';
 import {
@@ -21,6 +20,7 @@ interface Props {
   onClose: () => void;
 }
 
+// eslint-disable-next-line react/display-name
 const CreateStationPopup = forwardRef<PopupHandle, Props>(
   ({ onSubmit, onClose }, ref) => {
     const [name, setName] = useState<string>('');

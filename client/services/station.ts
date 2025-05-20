@@ -1,12 +1,16 @@
 import { getStationsInRange } from '@/apis/stationApis';
-import { GetStationRange, GetStationsRequest } from '@/interfaces/station';
+import { SuccessDecorator } from '@/interfaces/decorator';
+import {
+  GetStationRangeResponse,
+  GetStationsRequest,
+} from '@/interfaces/station';
 import { Region } from 'react-native-maps';
 
 const DEG_TO_KM = 111.32;
 
 export const getStationsInRangeService = async (
   region: Region | undefined,
-): Promise<GetStationRange[]> => {
+): Promise<SuccessDecorator<GetStationRangeResponse>> => {
   const request: GetStationsRequest = {
     latitude: region?.latitude ?? 0,
     longitude: region?.longitude ?? 0,

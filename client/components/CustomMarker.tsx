@@ -1,17 +1,17 @@
-import { GetStationRange, Station } from '@/interfaces/station';
+import { Station } from '@/interfaces/station';
 import { StyleSheet, Image, Text, View } from 'react-native';
-import { Marker, MarkerPressEvent } from 'react-native-maps';
+import { Marker } from 'react-native-maps';
 
 interface Props {
-  station: GetStationRange;
-  onPressMarker: (event: MarkerPressEvent) => void;
+  station: Station;
+  onPressMarker: (event: Station) => void;
 }
 
 export default function CustomMarker({ station, onPressMarker }: Props) {
   return (
     <Marker
       coordinate={{ latitude: station.latitude, longitude: station.longitude }}
-      onPress={onPressMarker}
+      onPress={() => onPressMarker(station)}
     >
       <View style={styles.markerContainer}>
         <View style={styles.markerBackground} />

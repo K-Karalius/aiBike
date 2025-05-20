@@ -1,4 +1,3 @@
-/* eslint-disable react/display-name */
 import React, {
   forwardRef,
   useEffect,
@@ -14,7 +13,7 @@ import Animated, {
   MapPressEvent,
   // eslint-disable-next-line import/no-duplicates
 } from 'react-native-maps';
-import { GetStationRange } from '@/interfaces/station';
+import { Station } from '@/interfaces/station';
 import { getStationsInRangeService } from '@/services/station';
 import CustomMarker from './CustomMarker';
 // eslint-disable-next-line import/no-duplicates
@@ -29,9 +28,10 @@ export interface MapViewHandle {
 interface Props {
   onPress?: (e: MapPressEvent) => void;
   children?: React.ReactNode;
-  onPressMarker?: (station: GetStationRange) => void;
+  onPressMarker?: (station: Station) => void;
 }
 
+// eslint-disable-next-line react/display-name
 const Map = forwardRef<MapViewHandle, Props>(
   ({ children, onPress, onPressMarker }, ref) => {
     const [location, setLocation] = useState<Region>({
@@ -40,7 +40,7 @@ const Map = forwardRef<MapViewHandle, Props>(
       latitudeDelta: MAP_DELTA,
       longitudeDelta: MAP_DELTA,
     });
-    const [stations, setStations] = useState<GetStationRange[]>([]);
+    const [stations, setStations] = useState<Station[]>([]);
     const timeoutRef = useRef<number>(0);
     const mapRef = useRef<Animated>(null);
 
@@ -69,7 +69,7 @@ const Map = forwardRef<MapViewHandle, Props>(
 
     const getStations = async (region: Region) => {
       const response = await getStationsInRangeService(region);
-      setStations(response);
+      setStations(response.value.items);
     };
 
     const updateMapStations = (region: Region, details: Details) => {

@@ -1,12 +1,13 @@
 import {
   CreateStationRequest,
-  GetStationRange,
+  GetStationRangeResponse,
   GetStationsRequest,
   PatchStationRequest,
   Station,
 } from '@/interfaces/station';
 import api from '@/apis/api';
 import { AxiosResponse } from 'axios';
+import { SuccessDecorator } from '@/interfaces/decorator';
 
 export const createStation = async (
   data: CreateStationRequest,
@@ -22,7 +23,7 @@ export const getStation = async (id: string): Promise<Station> => {
 
 export const getStationsInRange = async (
   data: GetStationsRequest,
-): Promise<GetStationRange[]> => {
+): Promise<SuccessDecorator<GetStationRangeResponse>> => {
   const response = await api.get('/station', { params: data });
   return response.data;
 };

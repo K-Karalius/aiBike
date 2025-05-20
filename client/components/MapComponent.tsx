@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as Location from 'expo-location';
 import MapView, { Region, Details, PROVIDER_GOOGLE } from 'react-native-maps';
-import { GetStationRange } from '@/interfaces/station';
+import { Station } from '@/interfaces/station';
 import { getStationsInRangeService } from '@/services/station';
 import CustomMarker from './CustomMarker';
 
@@ -14,7 +14,7 @@ export default function MapComponent() {
     latitudeDelta: MAP_DELTA,
     longitudeDelta: MAP_DELTA,
   });
-  const [stations, setStations] = useState<GetStationRange[]>([]);
+  const [stations, setStations] = useState<Station[]>([]);
   const timeoutRef = useRef<number>(0);
   const mapRef = useRef<MapView>(null);
 
@@ -43,7 +43,7 @@ export default function MapComponent() {
 
   const getStations = async (region: Region) => {
     const response = await getStationsInRangeService(region);
-    setStations(response);
+    setStations(response.value.items);
   };
 
   const updateMapStations = (region: Region, details: Details) => {

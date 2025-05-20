@@ -1,16 +1,24 @@
-import { deleteStation } from "@/apis/stationApis";
-import { CreateStationRequest, GetStationRange } from "@/interfaces/station";
-import { useState } from "react"
-import { View, Text, StyleSheet, TextInput, Button, TouchableOpacity, Alert } from "react-native";
-import { LatLng } from "react-native-maps";
-import { updateStation } from "@/services/station"
+import { deleteStation } from '@/apis/stationApis';
+import { Station } from '@/interfaces/station';
+import { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Button,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import { updateStation } from '@/services/station';
 
 interface Props {
   onClose: () => void;
-  station: GetStationRange;
+  onQR: () => void;
+  station: Station;
 }
 
-export default function ManageStationPopup({onClose, station}: Props) {
+export default function ManageStationPopup({ onClose, onQR, station }: Props) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState<string>(station.name);
@@ -19,18 +27,17 @@ export default function ManageStationPopup({onClose, station}: Props) {
   const onDeleteStation = async () => {
     await deleteStation(station.id);
     onClose();
-  }
+  };
 
   const onUpdateStation = async () => {
     try {
       const numValue = parseInt(size, 10);
 
-      if(name.trim().length == 0)
-        throw new Error("The station name cannot be blank")
-      if(!numValue)
-        throw new Error("Station capacity expected an integer");
-      if(numValue <= 0)
-        throw new Error("The station capacity should be a positive number");
+      if (name.trim().length === 0)
+        throw new Error('The station name cannot be blank');
+      if (!numValue) throw new Error('Station capacity expected an integer');
+      if (numValue <= 0)
+        throw new Error('The station capacity should be a positive number');
 
       const updatedStation = {
         id: station.id,
@@ -38,58 +45,80 @@ export default function ManageStationPopup({onClose, station}: Props) {
         capacity: numValue,
         longitude: station.longitude,
         latitude: station.latitude,
-      }
+      };
       await updateStation(updatedStation);
-      
+
       onClose();
-    } catch(err) {
-      if(err instanceof Error)
-        Alert.alert(err.message);
+    } catch (err) {
+      if (err instanceof Error) Alert.alert(err.message);
     }
-  }
-  
-  return ( 
+  };
+
+  return (
     <View style={styles.customPopup}>
-      { !editing && !confirmDelete &&
+      {!editing && !confirmDelete && (
         <>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
             <Text style={styles.closeText}>×</Text>
           </TouchableOpacity>
-          <View style={styles.padding}>      
+          <View style={styles.padding}>
             <Text>Editing {station.name} station</Text>
-            <Button title="Edit station" onPress={ () => setEditing(true) }/>
-            <Button title="Remove station" onPress={ () => setConfirmDelete(true) }/> 
+            <Button title="Edit station" onPress={() => setEditing(true)} />
+            <Button
+              title="Remove station"
+              onPress={() => setConfirmDelete(true)}
+            />
+            <Button title="Get random QR" onPress={onQR} />
           </View>
         </>
-      }
-      { confirmDelete && 
+      )}
+      {confirmDelete && (
         <>
           <Text>Remove the station {station.name}?</Text>
           <View style={styles.row}>
-            <Button title="Confirm" color="#39b97c" onPress={ onDeleteStation }/>
-            <Button title="Cancel" color="#f84444" onPress={ () => setConfirmDelete(false) }/>
+            <Button title="Confirm" color="#39b97c" onPress={onDeleteStation} />
+            <Button
+              title="Cancel"
+              color="#f84444"
+              onPress={() => setConfirmDelete(false)}
+            />
           </View>
         </>
-      }
-      { editing &&
+      )}
+      {editing && (
         <>
           <Text style={styles.padding}>Editing station {station.name}</Text>
           <View style={styles.textAndField}>
             <Text style={styles.padding}>Name</Text>
-            <TextInput style={styles.input} placeholder="Station name" value={name} onChangeText={setName}/>
+            <TextInput
+              style={styles.input}
+              placeholder="Station name"
+              value={name}
+              onChangeText={setName}
+            />
           </View>
           <View style={styles.textAndField}>
             <Text style={styles.padding}>Capacity</Text>
-            <TextInput style={styles.input} placeholder="Station capacity" value={size} onChangeText={setSize}/>
+            <TextInput
+              style={styles.input}
+              placeholder="Station capacity"
+              value={size}
+              onChangeText={setSize}
+            />
           </View>
           <View style={styles.row}>
-            <Button title="Submit" color="#39b97c" onPress={ onUpdateStation }/>
-            <Button title="Cancel" color="#f84444" onPress={ () => setEditing(false) }/>
+            <Button title="Submit" color="#39b97c" onPress={onUpdateStation} />
+            <Button
+              title="Cancel"
+              color="#f84444"
+              onPress={() => setEditing(false)}
+            />
           </View>
         </>
-      }
-    </View>);
-};
+      )}
+    </View>
+  );
+}
 
 const styles = StyleSheet.create({
   customPopup: {
@@ -105,7 +134,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     top: '10%',
     left: '50%',
-    transform: [{ translateX: "-50%" }],
+    transform: [{ translateX: '-50%' }],
   },
   padding: {
     padding: 10,

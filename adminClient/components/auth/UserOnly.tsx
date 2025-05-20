@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { ReactNode, useEffect } from 'react';
-import { Text } from 'react-native';
 import useUser from '../../hooks/userUser';
+import LoadingWheel from '../LoadingWheel';
 
 interface UserOnlyProps {
   children: ReactNode;
@@ -19,7 +19,7 @@ const UserOnly = ({ children }: UserOnlyProps) => {
   }, [user, authChecked]);
 
   if (!authChecked || !user) {
-    return <Text>Loading...</Text>;
+    return <LoadingWheel />;
   }
 
   return children;

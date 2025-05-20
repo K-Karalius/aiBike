@@ -4,7 +4,9 @@ import Map, { MapViewHandle } from '@/components/map/Map';
 import UserOnly from '@/components/auth/UserOnly';
 import { Ionicons } from '@expo/vector-icons';
 import { LatLng, MapPressEvent, Marker } from 'react-native-maps';
-import CreateStationPopup, { PopupHandle } from '@/components/map/CreateStationPopup';
+import CreateStationPopup, {
+  PopupHandle,
+} from '@/components/map/CreateStationPopup';
 import { createStation } from '@/apis/stationApis';
 import { GetStationRange } from '@/interfaces/station';
 import ManageStationPopup from '@/components/map/ManageStationPopup';
@@ -18,15 +20,15 @@ export default function MapScreen() {
   const [openStation, setOpenStation] = useState<GetStationRange | null>(null);
 
   const handleManageTap = async (e: MapPressEvent) => {
-    if(!manageStations) return;
+    if (!manageStations) return;
     setCreatePopupOpen(false);
     setOpenStation(null);
     setMarker(e.nativeEvent.coordinate);
 
-    const {longitude, latitude} = e.nativeEvent.coordinate;
+    const { longitude, latitude } = e.nativeEvent.coordinate;
     mapViewRef.current?.animToRegion(longitude, latitude);
     setCreatePopupOpen(true);
-  }
+  };
 
   const onExitManageStations = () => {
     setMarker(null);
@@ -34,73 +36,89 @@ export default function MapScreen() {
     setCreatePopupOpen(false);
     setOpenStation(null);
     createPopupRef.current?.resetFields();
-  }
+  };
 
   const cancelSelection = () => {
     setMarker(null);
     setCreatePopupOpen(false);
     createPopupRef.current?.resetFields();
-  }
+  };
 
   const handleMarkerPress = (station: GetStationRange) => {
-    if(!manageStations) return;
+    if (!manageStations) return;
 
-    if(openStation == null)
-      setOpenStation(station);
-    else
-      setOpenStation(null);
+    if (openStation == null) setOpenStation(station);
+    else setOpenStation(null);
 
     cancelSelection();
-  }
+  };
 
   const submitButton = async () => {
     try {
-      if(!marker)
-        throw new Error("Invalid location"); 
+      if (!marker) throw new Error('Invalid location');
 
       const createRequest = createPopupRef.current?.getFilledOutStation(marker);
-      
-      if(!createRequest) 
-        throw new Error("Not all fields filled out correctly");
+
+      if (!createRequest)
+        throw new Error('Not all fields filled out correctly');
 
       await createStation(createRequest);
 
       onExitManageStations();
-
     } catch (err) {
-      if (err instanceof Error)
-        Alert.alert(err.message);
+      if (err instanceof Error) Alert.alert(err.message);
     }
-  }
+  };
 
   return (
     <UserOnly>
       <View style={styles.container}>
         <View style={styles.mapContainer}>
-            <Map ref={mapViewRef} onPress={handleManageTap} onPressMarker={ handleMarkerPress }> 
-              { marker && <Marker coordinate={marker}/> }
-            </Map>
-          { manageStations ?
-              (<>
-                <View style={styles.box}>
-                  <Text style={styles.boxText}>Tap on the map to add a new station, tap on a station to edit it</Text>
-                </View>
-                <TouchableOpacity style={styles.floatingButton} onPress={ () => onExitManageStations() }>
-                  <Text style={styles.buttonText}>Cancel</Text>
-                </TouchableOpacity>
-              </>) :
-              (<TouchableOpacity style={styles.circleButton} onPress={ () => setManageStations(true)  }>
-                <Ionicons name="add" size={24} color="white" />
-              </TouchableOpacity>)
-          }
+          <Map
+            ref={mapViewRef}
+            onPress={handleManageTap}
+            onPressMarker={handleMarkerPress}
+          >
+            {marker && <Marker coordinate={marker} />}
+          </Map>
+          {manageStations ? (
+            <>
+              <View style={styles.box}>
+                <Text style={styles.boxText}>
+                  Tap on the map to add a new station, tap on a station to edit
+                  it
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.floatingButton}
+                onPress={() => onExitManageStations()}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity
+              style={styles.circleButton}
+              onPress={() => setManageStations(true)}
+            >
+              <Ionicons name="add" size={24} color="white" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
-      { createPopupOpen && 
-        <CreateStationPopup ref={createPopupRef} onSubmit={submitButton} onClose={cancelSelection}/>
-      }
-      { openStation != null &&
-        <ManageStationPopup onClose={ () => setOpenStation(null) } station={openStation}/>
-      }
+      {createPopupOpen && (
+        <CreateStationPopup
+          ref={createPopupRef}
+          onSubmit={submitButton}
+          onClose={cancelSelection}
+        />
+      )}
+      {openStation != null && (
+        <ManageStationPopup
+          onClose={() => setOpenStation(null)}
+          station={openStation}
+        />
+      )}
     </UserOnly>
   );
 }
@@ -166,5 +184,3 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
-
-

@@ -1,9 +1,23 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
+/* eslint-disable react/display-name */
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 import * as Location from 'expo-location';
-import Animated, { Region, Details, PROVIDER_GOOGLE, MapPressEvent } from 'react-native-maps';
+import Animated, {
+  Region,
+  Details,
+  PROVIDER_GOOGLE,
+  MapPressEvent,
+  // eslint-disable-next-line import/no-duplicates
+} from 'react-native-maps';
 import { GetStationRange } from '@/interfaces/station';
 import { getStationsInRangeService } from '@/services/station';
 import CustomMarker from './CustomMarker';
+// eslint-disable-next-line import/no-duplicates
 import MapView from 'react-native-maps';
 
 const MAP_DELTA: number = 0.01;
@@ -13,96 +27,105 @@ export interface MapViewHandle {
 }
 
 interface Props {
-  onPress?: (e: MapPressEvent) => void; 
+  onPress?: (e: MapPressEvent) => void;
   children?: React.ReactNode;
-  onPressMarker?: ((station: GetStationRange) => void);
+  onPressMarker?: (station: GetStationRange) => void;
 }
 
-const Map = forwardRef<MapViewHandle, Props>(({children, onPress, onPressMarker}, ref) => {
-  const [location, setLocation] = useState<Region>({
-    latitude: 0, // Default coordinates
-    longitude: 0,
-    latitudeDelta: MAP_DELTA,
-    longitudeDelta: MAP_DELTA,
-  });
-  const [stations, setStations] = useState<GetStationRange[]>([]);
-  const timeoutRef = useRef<number>(0);
-  const mapRef = useRef<Animated>(null);
+const Map = forwardRef<MapViewHandle, Props>(
+  ({ children, onPress, onPressMarker }, ref) => {
+    const [location, setLocation] = useState<Region>({
+      latitude: 0, // Default coordinates
+      longitude: 0,
+      latitudeDelta: MAP_DELTA,
+      longitudeDelta: MAP_DELTA,
+    });
+    const [stations, setStations] = useState<GetStationRange[]>([]);
+    const timeoutRef = useRef<number>(0);
+    const mapRef = useRef<Animated>(null);
 
-  useEffect(() => {
-    const getLocation = async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Permission to access location was denied');
-        return;
-      }
+    useEffect(() => {
+      const getLocation = async () => {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          alert('Permission to access location was denied');
+          return;
+        }
 
-      const userLocation = await Location.getCurrentPositionAsync({});
-      const region = {
-        latitude: userLocation.coords.latitude,
-        longitude: userLocation.coords.longitude,
-        latitudeDelta: MAP_DELTA,
-        longitudeDelta: MAP_DELTA,
+        const userLocation = await Location.getCurrentPositionAsync({});
+        const region = {
+          latitude: userLocation.coords.latitude,
+          longitude: userLocation.coords.longitude,
+          latitudeDelta: MAP_DELTA,
+          longitudeDelta: MAP_DELTA,
+        };
+        setLocation(region);
+        mapRef.current?.animateToRegion(region);
+        getStations(region);
       };
-      setLocation(region);
-      mapRef.current?.animateToRegion(region);
-      getStations(region);
+
+      getLocation();
+    }, []);
+
+    const getStations = async (region: Region) => {
+      const response = await getStationsInRangeService(region);
+      setStations(response);
     };
 
-    getLocation();
-  }, []);
+    const updateMapStations = (region: Region, details: Details) => {
+      // Use the correct Details type
+      setLocation(region);
 
-  const getStations = async (region: Region) => {
-    const response = await getStationsInRangeService(region);
-    setStations(response);
-  };
+      // Handle potential undefined value with optional chaining
+      if (!details?.isGesture) return;
 
-  const updateMapStations = (region: Region, details: Details) => {
-    // Use the correct Details type
-    setLocation(region);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
-    // Handle potential undefined value with optional chaining
-    if (!details?.isGesture) return;
+      timeoutRef.current = setTimeout(() => {
+        getStations(region);
+      }, 1000);
+    };
 
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    const animToRegion = async (longitude: number, latitude: number) => {
+      mapRef.current?.animateToRegion(
+        {
+          longitude: longitude,
+          latitude: latitude,
+          longitudeDelta: MAP_DELTA,
+          latitudeDelta: MAP_DELTA,
+        },
+        500,
+      );
+    };
 
-    timeoutRef.current = setTimeout(() => {
-      getStations(region);
-    }, 1000);
-  };
+    useImperativeHandle(ref, () => ({
+      animToRegion,
+    }));
 
-  const animToRegion = async (longitude: number, latitude: number) => {
-    mapRef.current?.animateToRegion({
-      longitude: longitude,
-      latitude: latitude,
-      longitudeDelta: MAP_DELTA,
-      latitudeDelta: MAP_DELTA
-    }, 500);
-  }
-
-  useImperativeHandle(ref, () => ({
-    animToRegion,
-  }));
-
-  return (
-    <MapView
-      ref={mapRef}
-      style={{ flex: 1 }}
-      provider={PROVIDER_GOOGLE}
-      initialRegion={location}
-      onRegionChangeComplete={updateMapStations}
-      customMapStyle={customMapStyle}
-      showsUserLocation
-      onPress={onPress}
-      toolbarEnabled={false}  
-    >
-      {stations.map((station, index) => (
-        <CustomMarker station={station} onPressMarker={ onPressMarker } key={index} />
-      ))}
-      {children}
-    </MapView>
-  );
-});
+    return (
+      <MapView
+        ref={mapRef}
+        style={{ flex: 1 }}
+        provider={PROVIDER_GOOGLE}
+        initialRegion={location}
+        onRegionChangeComplete={updateMapStations}
+        customMapStyle={customMapStyle}
+        showsUserLocation
+        onPress={onPress}
+        toolbarEnabled={false}
+      >
+        {stations.map((station, index) => (
+          <CustomMarker
+            station={station}
+            onPressMarker={onPressMarker}
+            key={index}
+          />
+        ))}
+        {children}
+      </MapView>
+    );
+  },
+);
 
 const customMapStyle = [
   {

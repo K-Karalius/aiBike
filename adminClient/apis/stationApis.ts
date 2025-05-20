@@ -27,16 +27,14 @@ export const getStationsInRange = async (
   return response.data;
 };
 
-export const deleteStation = async (
-  id: string,
-): Promise<AxiosResponse> => {
+export const deleteStation = async (id: string): Promise<AxiosResponse> => {
   const response = await api.delete(`/station/${id}`);
   return response.data;
 };
 
 export const patchStation = async (
-  data: PatchStationRequest
+  data: PatchStationRequest,
 ): Promise<Station> => {
-    const response = await api.patch("/station", data);
-    return response.data;
-}
+  const response = await api.patch('/station', data);
+  return response.data;
+};

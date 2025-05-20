@@ -1,5 +1,9 @@
 import { getStationsInRange, patchStation } from '@/apis/stationApis';
-import { CreateStationRequest, GetStationRange, GetStationsRequest, PatchStationRequest } from '@/interfaces/station';
+import {
+  GetStationRange,
+  GetStationsRequest,
+  PatchStationRequest,
+} from '@/interfaces/station';
 import { Region } from 'react-native-maps';
 
 const DEG_TO_KM = 111.32;

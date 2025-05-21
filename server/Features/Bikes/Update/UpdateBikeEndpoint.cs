@@ -20,11 +20,13 @@ public class UpdateBikeEndpoint : IEndpoint
                 if(request.CurrentStationId != null)
                 {
                     var station = await dbContext.Stations.Include(s => s.Bikes).FirstOrDefaultAsync(s => s.Id == request.CurrentStationId);
-                    if(station == null) return Results.NotFound("Station not found");
-                    if(station.Bikes.Count >= station.Capacity) return Results.UnprocessableEntity("The station is full");
+                    if (station == null) return Results.NotFound("Station not found");
+                    if (station.Bikes.Count >= station.Capacity) return Results.UnprocessableEntity("The station is full");
                     bike.CurrentStationId = request.CurrentStationId;
+                    bike.Latitude = station.Latitude;
+                    bike.Longitude = station.Longitude;
                 }
-                if(request.Latitude != null && request.Longitude != null)
+                else if(request.Latitude != null && request.Longitude != null)
                 {
                     var ride = dbContext.Rides.FirstOrDefault(r => r.RideStatus == RideStatus.Ongoing && r.BikeId == bike.Id);
                     if (ride != null)

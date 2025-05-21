@@ -1,10 +1,13 @@
+import { Bike } from './bike';
+
 export interface Station {
   id: string;
   name: string;
   capacity: number;
   latitude: number;
   longitude: number;
-  bikeCount: number;
+  bikeCount?: number;
+  bikes?: Bike[];
 }
 
 export interface GetStationRangeResponse {

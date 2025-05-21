@@ -28,7 +28,7 @@ public class CreateRideEndpoint : IEndpoint
                 if (user == null)
                     return Results.NotFound("User not found");
 
-                var currentRide =  await dbContext.Rides.FirstOrDefaultAsync(r => r.RideStatus == RideStatus.Ongoing && r.UserId == userId);
+                var currentRide = await dbContext.Rides.FirstOrDefaultAsync(r => r.RideStatus == RideStatus.Ongoing && r.UserId == userId);
                 if (currentRide != null)
                     return Results.UnprocessableEntity("The user already has an ongoing ride.");
 
@@ -44,7 +44,7 @@ public class CreateRideEndpoint : IEndpoint
                 };
 
                 await dbContext.AddAsync(ride);
-                bike.CurrentStation = null;
+                bike.CurrentStationId = null;
                 bike.BikeStatus = BikeStatus.Occupied;
                 await dbContext.SaveChangesAsync();
                 return Results.Ok(ride);

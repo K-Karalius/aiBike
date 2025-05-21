@@ -135,7 +135,7 @@ async function checkProximityToAStation(
     longitude: userCoords.longitude,
     radiusKm: radiusKm,
   };
-  const nearbyStations = (await getStationsInRange(stationRequest)).items;
+  const nearbyStations = (await getStationsInRange(stationRequest)).value.items;
 
   if (!nearbyStations || nearbyStations.length === 0) {
     throw new Error(

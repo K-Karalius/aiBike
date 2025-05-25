@@ -1,9 +1,8 @@
-import { getStationsInRange, patchStation } from '@/apis/stationApis';
+import { getStationsInRange } from '@/apis/stationApis';
 import { SuccessDecorator } from '@/interfaces/decorator';
 import {
   GetStationRangeResponse,
   GetStationsRequest,
-  PatchStationRequest,
 } from '@/interfaces/station';
 import { Region } from 'react-native-maps';
 
@@ -20,9 +19,4 @@ export const getStationsInRangeService = async (
   };
   const response = getStationsInRange(request);
   return response;
-};
-
-export const updateStation = async (data: PatchStationRequest) => {
-  // Add optimistic locking logic
-  await patchStation(data);
 };

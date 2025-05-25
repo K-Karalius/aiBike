@@ -1,5 +1,9 @@
-import { deleteStation } from '@/apis/stationApis';
-import { Station } from '@/interfaces/station';
+import { deleteStation, patchStation } from '@/apis/stationApis';
+import {
+  PatchStationRequest,
+  PatchStationResponseConflict,
+  Station,
+} from '@/interfaces/station';
 import { useState } from 'react';
 import {
   View,
@@ -10,23 +14,47 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { updateStation } from '@/services/station';
+import OptimisticPopup from './OptimisticPopup';
+import axios from 'axios';
 
 interface Props {
   onClose: () => void;
   onQR: () => void;
+  invokeReload: () => void;
   station: Station;
 }
 
-export default function ManageStationPopup({ onClose, onQR, station }: Props) {
+export default function ManageStationPopup({
+  onClose,
+  onQR,
+  station,
+  invokeReload,
+}: Props) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState<string>(station.name);
   const [size, setSize] = useState<string>(`${station.capacity}`);
+  const [optLock, setOptLock] = useState<PatchStationResponseConflict | null>(
+    null,
+  );
 
   const onDeleteStation = async () => {
     await deleteStation(station.id);
     onClose();
+  };
+
+  const updateStation = async (data: PatchStationRequest): Promise<boolean> => {
+    try {
+      await patchStation(data);
+      return true;
+    } catch (err) {
+      // eslint-disable-next-line import/no-named-as-default-member
+      if (axios.isAxiosError(err)) {
+        const data: PatchStationResponseConflict = err.response?.data;
+        setOptLock(data);
+      }
+      return false;
+    }
   };
 
   const onUpdateStation = async () => {
@@ -45,17 +73,68 @@ export default function ManageStationPopup({ onClose, onQR, station }: Props) {
         capacity: numValue,
         longitude: station.longitude,
         latitude: station.latitude,
+        rowVersion: station.rowVersion,
       };
-      await updateStation(updatedStation);
 
+      if (!(await updateStation(updatedStation))) return;
+
+      invokeReload();
       onClose();
     } catch (err) {
       if (err instanceof Error) Alert.alert(err.message);
     }
   };
 
+  const closeOpt = async () => {
+    setOptLock(null);
+    invokeReload();
+    onClose();
+  };
+
+  const onKeep = async () => {
+    station.rowVersion = optLock?.currentData.rowVersion;
+    setOptLock(null);
+    onUpdateStation();
+  };
+
+  const onServer = async () => {
+    station.rowVersion = optLock?.currentData.rowVersion;
+    station.name = optLock?.currentData.name
+      ? optLock?.currentData.name
+      : station.name;
+    station.capacity = optLock?.currentData.capacity
+      ? optLock?.currentData.capacity
+      : station.capacity;
+    station.longitude = optLock?.currentData.longitude
+      ? optLock?.currentData.longitude
+      : station.longitude;
+    station.latitude = optLock?.currentData.latitude
+      ? optLock?.currentData.latitude
+      : station.latitude;
+    closeOpt();
+  };
+
   return (
     <View style={styles.customPopup}>
+      {optLock !== null && (
+        <OptimisticPopup
+          localData={{
+            name: name,
+            capacity: parseInt(size, 10),
+            longitude: station.longitude,
+            latitude: station.latitude,
+          }}
+          serverData={{
+            name: optLock.currentData.name,
+            capacity: optLock.currentData.capacity,
+            longitude: optLock.currentData.longitude,
+            latitude: optLock.currentData.latitude,
+          }}
+          onKeepLocal={onKeep}
+          onUseServer={onServer}
+          onClose={closeOpt}
+        />
+      )}
       {!editing && !confirmDelete && (
         <>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>

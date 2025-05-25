@@ -3,6 +3,7 @@ import {
   GetStationRangeResponse,
   GetStationsRequest,
   PatchStationRequest,
+  PatchStationResponseConflict,
   Station,
 } from '@/interfaces/station';
 import api from '@/apis/api';

@@ -8,6 +8,7 @@ export interface Station {
   longitude: number;
   bikeCount?: number;
   bikes?: Bike[];
+  rowVersion?: number;
 }
 
 export interface GetStationRangeResponse {
@@ -40,4 +41,20 @@ export interface PatchStationRequest {
   capacity: number;
   longitude: number;
   latitude: number;
+  rowVersion?: number;
+}
+
+export interface PatchStationResponseConflict {
+  message: string;
+  currentData: ConflictStation;
+  yourChanges: ConflictStation;
+}
+
+export interface ConflictStation {
+  id?: string;
+  name?: string;
+  latitude?: number;
+  longitude?: number;
+  capacity?: number;
+  rowVersion?: number;
 }

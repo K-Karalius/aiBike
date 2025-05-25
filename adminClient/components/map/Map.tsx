@@ -23,6 +23,7 @@ const MAP_DELTA: number = 0.01;
 
 export interface MapViewHandle {
   animToRegion: (longitude: number, latitude: number) => void;
+  reloadMap: () => void;
 }
 
 interface Props {
@@ -43,6 +44,7 @@ const Map = forwardRef<MapViewHandle, Props>(
     const [stations, setStations] = useState<Station[]>([]);
     const timeoutRef = useRef<number>(0);
     const mapRef = useRef<Animated>(null);
+    const [invokeReload, setInvokeReload] = useState<number>(0);
 
     useEffect(() => {
       const getLocation = async () => {
@@ -66,6 +68,11 @@ const Map = forwardRef<MapViewHandle, Props>(
 
       getLocation();
     }, []);
+
+    useEffect(() => {
+      getStations(location);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [invokeReload]);
 
     const getStations = async (region: Region) => {
       const response = await getStationsInRangeService(region);
@@ -98,8 +105,14 @@ const Map = forwardRef<MapViewHandle, Props>(
       );
     };
 
+    const reloadMap = async () => {
+      setStations([]);
+      setInvokeReload((p) => p + 1);
+    };
+
     useImperativeHandle(ref, () => ({
       animToRegion,
+      reloadMap,
     }));
 
     return (

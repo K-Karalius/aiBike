@@ -137,6 +137,7 @@ export default function MapScreen() {
         <ManageStationPopup
           onClose={() => setOpenStation(null)}
           station={openStation}
+          invokeReload={() => mapViewRef.current?.reloadMap()}
           onQR={() => {
             setOpenQR(openStation.id);
             setOpenStation(null);

@@ -1,3 +1,3 @@
 ﻿namespace server.Features.Auth.Login;
 
-public record AuthResponse(string AccessToken, string RefreshToken);
+public record AuthResponse(string AccessToken, string RefreshToken, IEnumerable<string> Roles);

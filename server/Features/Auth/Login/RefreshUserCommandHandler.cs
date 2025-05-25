@@ -65,6 +65,6 @@ public class RefreshUserCommandHandler(
         );
         var accessToken = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-        return Result<AuthResponse>.Success(new AuthResponse(accessToken, newRefreshValue));
+        return Result<AuthResponse>.Success(new AuthResponse(accessToken, newRefreshValue, roles));
     }
 }

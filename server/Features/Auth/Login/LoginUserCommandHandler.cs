@@ -62,6 +62,6 @@ public class LoginUserCommandHandler(
         dbContext.RefreshTokens.Add(refreshToken);
         await dbContext.SaveChangesAsync();
 
-        return Result<AuthResponse>.Success(new AuthResponse(accessToken, refreshValue));
+        return Result<AuthResponse>.Success(new AuthResponse(accessToken, refreshValue, roles));
     }
 }

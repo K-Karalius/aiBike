@@ -7,4 +7,5 @@ public record UpdateStationRequest
     public decimal? Latitude { get; init; }
     public decimal? Longitude { get; init; }
     public int? Capacity { get; init; }
+    public uint RowVersion { get; init; }
 }

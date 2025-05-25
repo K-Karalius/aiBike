@@ -8,4 +8,5 @@ public record GetAllStationsResponse
     public decimal Longitude { get; set; }
     public int Capacity { get; set; }
     public int BikeCount { get; set; }
+    public uint RowVersion { get; set; }
 };

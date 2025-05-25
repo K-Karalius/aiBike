@@ -11,11 +11,19 @@ public class UpdateStationEndpoint : IEndpoint
         builder.MapPatch("/api/station/",
             async (ApplicationDbContext dbContext, UpdateStationRequest request) =>
             {
-                var station = dbContext.Stations.Include(s => s.Bikes).FirstOrDefault(s => s.Id == request.Id);
+                var station = await dbContext.Stations.FirstOrDefaultAsync(s => s.Id == request.Id);
                 if (station == null) return Results.NotFound("Station not found");
+
+                dbContext.Entry(station)
+                    .Property(s => s.RowVersion)
+                    .OriginalValue = request.RowVersion;
+
                 if (request.Capacity != null)
                 {
-                    if (request.Capacity < station.Bikes.Count)
+                    var currentBikeCount = await dbContext.Bikes
+                        .CountAsync(b => b.CurrentStationId == request.Id);
+
+                    if (request.Capacity < currentBikeCount)
                         return Results.UnprocessableEntity(
                             "Station capacity cannot be lower than it's current bike count");
                     station.Capacity = (int)request.Capacity;
@@ -26,14 +34,13 @@ public class UpdateStationEndpoint : IEndpoint
                 if (request.Longitude != null) station.Longitude = (decimal)request.Longitude;
                 try
                 {
-                    await Task.Delay(TimeSpan.FromSeconds(5));
                     await dbContext.SaveChangesAsync();
-                    return Results.Ok(station);
+                    return Results.Ok(UpdateStationResponse.From(station));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     var currentState = await dbContext.Stations
-                        .Include(s => s.Bikes)
+                        .AsNoTracking()
                         .FirstAsync(s => s.Id == request.Id);
 
                     var attemptedChanges = new Dictionary<string, object?>();
@@ -45,7 +52,7 @@ public class UpdateStationEndpoint : IEndpoint
                     return Results.Conflict(new
                     {
                         message = "Update conflict detected",
-                        currentData = currentState,
+                        currentData = UpdateStationResponse.From(currentState),
                         yourChanges = attemptedChanges
                     });
                 }

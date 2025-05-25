@@ -57,7 +57,8 @@ public sealed class GetAllStationsHandler(ApplicationDbContext dbContext)
                 Latitude = x.Station.Latitude,
                 Longitude = x.Station.Longitude,
                 Capacity = x.Station.Capacity,
-                BikeCount = x.BikeCount
+                BikeCount = x.BikeCount,
+                RowVersion = x.Station.RowVersion,
             });
 
         var paged = await queryable.ToPagedResultAsync(query.Page, query.PageSize);

@@ -2,5 +2,5 @@ namespace server.Features.Rides.Update;
 
 public record EndRideRequest
 {
-    public Guid Id { get; init;}
+    public Guid Id { get; init; }
 }

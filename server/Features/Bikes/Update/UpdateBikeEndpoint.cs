@@ -14,10 +14,10 @@ public class UpdateBikeEndpoint : IEndpoint
             async (ApplicationDbContext dbContext, UpdateBikeRequest request) =>
             {
                 var bike = dbContext.Bikes.Find(request.Id);
-                if(bike == null) return Results.NotFound("Bike not found");
-                if(request.SerialNumber != null) bike.SerialNumber = request.SerialNumber;
-                if(request.BikeStatus != null) bike.BikeStatus = (BikeStatus) request.BikeStatus;
-                if(request.CurrentStationId != null)
+                if (bike == null) return Results.NotFound("Bike not found");
+                if (request.SerialNumber != null) bike.SerialNumber = request.SerialNumber;
+                if (request.BikeStatus != null) bike.BikeStatus = (BikeStatus)request.BikeStatus;
+                if (request.CurrentStationId != null)
                 {
                     var station = await dbContext.Stations.Include(s => s.Bikes).FirstOrDefaultAsync(s => s.Id == request.CurrentStationId);
                     if (station == null) return Results.NotFound("Station not found");
@@ -26,7 +26,7 @@ public class UpdateBikeEndpoint : IEndpoint
                     bike.Latitude = station.Latitude;
                     bike.Longitude = station.Longitude;
                 }
-                else if(request.Latitude != null && request.Longitude != null)
+                else if (request.Latitude != null && request.Longitude != null)
                 {
                     var ride = dbContext.Rides.FirstOrDefault(r => r.RideStatus == RideStatus.Ongoing && r.BikeId == bike.Id);
                     if (ride != null)

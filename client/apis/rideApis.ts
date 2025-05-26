@@ -1,4 +1,5 @@
 import api from '@/apis/api';
+import { PagedResult } from '@/interfaces/pagination';
 import {
   Ride,
   CreateRideRequest,
@@ -19,7 +20,7 @@ export const getRide = async (id: string): Promise<Ride> => {
 export const getAllRides = async (
   page: number = 1,
   pageSize: number = 50,
-): Promise<Ride[]> => {
+): Promise<PagedResult<Ride>> => {
   const response = await api.get(`/ride?page=${page}&pageSize=${pageSize}`);
   return response.data;
 };
